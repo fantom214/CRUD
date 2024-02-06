@@ -121,16 +121,17 @@ final class UploadersRepository
     }
 
     /**
-     * Get the uploaders classes for the given group of uploaders
+     * Get the uploaders classes for the given group of uploaders.
      */
     public function getAjaxUploadTypes(string $group = 'withFiles'): array
     {
         $ajaxFieldTypes = [];
-        foreach($this->uploaderClasses[$group] as $fieldType => $uploader) {
-            if(is_a($uploader, 'Backpack\Pro\Uploads\AjaxUploaderInterface', true)) {
+        foreach ($this->uploaderClasses[$group] as $fieldType => $uploader) {
+            if (is_a($uploader, 'Backpack\Pro\Uploads\AjaxUploaderInterface', true)) {
                 $ajaxFieldTypes[] = $fieldType;
             }
         }
+
         return $ajaxFieldTypes;
     }
 }
