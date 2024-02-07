@@ -127,7 +127,7 @@ final class UploadersRepository
     {
         $ajaxFieldTypes = [];
         foreach ($this->uploaderClasses[$group] as $fieldType => $uploader) {
-            if (is_a($uploader, 'Backpack\Pro\Uploads\AjaxUploaderInterface', true)) {
+            if (is_a($uploader, 'Backpack\Pro\Uploads\AjaxUploaderAbstract', true)) {
                 $ajaxFieldTypes[] = $fieldType;
             }
         }
