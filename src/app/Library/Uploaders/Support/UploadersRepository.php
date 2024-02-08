@@ -2,8 +2,6 @@
 
 namespace Backpack\CRUD\app\Library\Uploaders\Support;
 
-use Backpack\CRUD\app\Library\CrudPanel\CrudColumn;
-use Backpack\CRUD\app\Library\CrudPanel\CrudField;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
 use Illuminate\Support\Str;
 
@@ -146,8 +144,8 @@ final class UploadersRepository
         if (! $this->isValidUploadField($requestInputName)) {
             abort(500, 'Invalid field for upload.');
         }
-        
-        if(strpos($requestInputName, '#') !== false) {
+
+        if (strpos($requestInputName, '#') !== false) {
             $repeatableContainerName = Str::before($requestInputName, '#');
             $requestInputName = Str::after($requestInputName, '#');
             $uploaders = $this->getRepeatableUploadersFor($repeatableContainerName);
@@ -162,6 +160,7 @@ final class UploadersRepository
         $uploaderConfiguration = $crudObject[$uploadType] ?? [];
         $uploaderConfiguration = ! is_array($uploaderConfiguration) ? [] : $uploaderConfiguration;
         $uploaderClass = $this->getUploadFor($crudObject['type'], $uploadType);
+
         return new $uploaderClass(['name' => $requestInputName], $uploaderConfiguration);
     }
 
@@ -187,5 +186,4 @@ final class UploadersRepository
 
         return isset(CRUD::fields()[$fieldName]) && in_array(CRUD::fields()[$fieldName]['type'], $this->getAjaxFieldUploadTypes($fieldName));
     }
-
 }
