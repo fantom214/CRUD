@@ -2,7 +2,10 @@
 
 namespace Backpack\CRUD\app\Library\Uploaders\Support;
 
+use Backpack\CRUD\app\Library\CrudPanel\CrudColumn;
+use Backpack\CRUD\app\Library\CrudPanel\CrudField;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
+use Illuminate\Support\Str;
 
 final class UploadersRepository
 {
@@ -127,11 +130,62 @@ final class UploadersRepository
     {
         $ajaxFieldTypes = [];
         foreach ($this->uploaderClasses[$group] as $fieldType => $uploader) {
-            if (is_a($uploader, 'Backpack\Pro\Uploads\AjaxUploaderAbstract', true)) {
+            if (is_a($uploader, 'Backpack\Pro\Uploads\BackpackAjaxUploader', true)) {
                 $ajaxFieldTypes[] = $fieldType;
             }
         }
 
         return $ajaxFieldTypes;
     }
+
+    /**
+     * Get an uploader instance for a given crud object.
+     */
+    public function getUploaderInstance(string $requestInputName, array $crudObject): UploaderInterface
+    {
+        if (! $this->isValidUploadField($requestInputName)) {
+            abort(500, 'Invalid field for upload.');
+        }
+        
+        if(strpos($requestInputName, '#') !== false) {
+            $repeatableContainerName = Str::before($requestInputName, '#');
+            $requestInputName = Str::after($requestInputName, '#');
+            $uploaders = $this->getRepeatableUploadersFor($repeatableContainerName);
+            //TODO: Implement the logic for repeatable uploaders
+            dd('here');
+        }
+
+        if (! $uploadType = $this->getUploadCrudObjectMacroType($crudObject)) {
+            abort(500, 'There is no uploader defined for the given field type.');
+        }
+
+        $uploaderConfiguration = $crudObject[$uploadType] ?? [];
+        $uploaderConfiguration = ! is_array($uploaderConfiguration) ? [] : $uploaderConfiguration;
+        $uploaderClass = $this->getUploadFor($crudObject['type'], $uploadType);
+        return new $uploaderClass(['name' => $requestInputName], $uploaderConfiguration);
+    }
+
+    /**
+     * Get the upload field macro type for the given object.
+     */
+    private function getUploadCrudObjectMacroType(array $crudObject): string
+    {
+        return isset($crudObject['withFiles']) ? 'withFiles' : ($crudObject['withMedia'] ? 'withMedia' : null);
+    }
+
+    private function isValidUploadField($fieldName)
+    {
+        if (Str::contains($fieldName, '#')) {
+            $container = Str::before($fieldName, '#');
+            $fieldName = Str::after($fieldName, '#');
+            $field = array_filter(CRUD::fields()[$container]['subfields'] ?? [], function ($item) use ($fieldName) {
+                return $item['name'] === $fieldName && in_array($item['type'], $this->getAjaxFieldUploadTypes($fieldName));
+            });
+
+            return ! empty($field);
+        }
+
+        return isset(CRUD::fields()[$fieldName]) && in_array(CRUD::fields()[$fieldName]['type'], $this->getAjaxFieldUploadTypes($fieldName));
+    }
+
 }
