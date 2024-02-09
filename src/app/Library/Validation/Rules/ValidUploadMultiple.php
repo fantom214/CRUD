@@ -3,28 +3,13 @@
 namespace Backpack\CRUD\app\Library\Validation\Rules;
 
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
-use Closure;
 
 class ValidUploadMultiple extends ValidFileArray
 {
-    /**
-     * Run the validation rule.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     * @return void
-     */
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function validateRules(string $attribute, mixed $value): array
     {
-        if (! $value = self::ensureValidValue($value)) {
-            $fail('Unable to determine the value type.');
-
-            return;
-        }
-
         $entry = CrudPanelFacade::getCurrentEntry() !== false ? CrudPanelFacade::getCurrentEntry() : null;
-
+       
         // `upload_multiple` sends [[0 => null]] when user doesn't upload anything
         // assume that nothing changed on field so nothing is sent on the request.
         if (count($value) === 1 && empty($value[0])) {
@@ -49,15 +34,9 @@ class ValidUploadMultiple extends ValidFileArray
             $data = $this->data;
             $data[$attribute] = array_diff($value, $filesDeleted);
 
-            $this->validateArrayData($attribute, $fail, $data);
-
-            $this->validateItems($attribute, $value, $fail);
-
-            return;
+           return $this->validateFieldAndFile($attribute, $value, $data);
         }
 
-        $this->validateArrayData($attribute, $fail);
-
-        $this->validateItems($attribute, $value, $fail);
+        return $this->validateFieldAndFile($attribute, $value);
     }
 }

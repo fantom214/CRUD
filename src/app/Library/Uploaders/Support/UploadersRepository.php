@@ -2,6 +2,7 @@
 
 namespace Backpack\CRUD\app\Library\Uploaders\Support;
 
+use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
 use Illuminate\Support\Str;
 
@@ -124,10 +125,10 @@ final class UploadersRepository
     /**
      * Get the uploaders classes for the given group of uploaders.
      */
-    public function getAjaxUploadTypes(string $group = 'withFiles'): array
+    public function getAjaxUploadTypes(string $uploaderMacro = 'withFiles'): array
     {
         $ajaxFieldTypes = [];
-        foreach ($this->uploaderClasses[$group] as $fieldType => $uploader) {
+        foreach ($this->uploaderClasses[$uploaderMacro] as $fieldType => $uploader) {
             if (is_a($uploader, 'Backpack\Pro\Uploads\BackpackAjaxUploader', true)) {
                 $ajaxFieldTypes[] = $fieldType;
             }
@@ -139,12 +140,8 @@ final class UploadersRepository
     /**
      * Get an uploader instance for a given crud object.
      */
-    public function getUploaderInstance(string $requestInputName, array $crudObject): UploaderInterface
+    public function getFieldUploaderInstance(string $requestInputName): UploaderInterface
     {
-        if (! $this->isValidUploadField($requestInputName)) {
-            abort(500, 'Invalid field for upload.');
-        }
-
         if (strpos($requestInputName, '#') !== false) {
             $repeatableContainerName = Str::before($requestInputName, '#');
             $requestInputName = Str::after($requestInputName, '#');
@@ -153,13 +150,21 @@ final class UploadersRepository
             dd('here');
         }
 
-        if (! $uploadType = $this->getUploadCrudObjectMacroType($crudObject)) {
+        if (empty($crudObject = CRUD::fields()[$requestInputName])) {
+            abort(500, 'Could not find the field in the CRUD fields.');
+        }
+
+        if (! $uploaderMacro = $this->getUploadCrudObjectMacroType($crudObject)) {
             abort(500, 'There is no uploader defined for the given field type.');
         }
 
-        $uploaderConfiguration = $crudObject[$uploadType] ?? [];
+        if (! $this->isValidUploadField($crudObject, $uploaderMacro)) {
+            abort(500, 'Invalid field for upload.');
+        }
+
+        $uploaderConfiguration = $crudObject[$uploaderMacro] ?? [];
         $uploaderConfiguration = ! is_array($uploaderConfiguration) ? [] : $uploaderConfiguration;
-        $uploaderClass = $this->getUploadFor($crudObject['type'], $uploadType);
+        $uploaderClass = $this->getUploadFor($crudObject['type'], $uploaderMacro);
 
         return new $uploaderClass(['name' => $requestInputName], $uploaderConfiguration);
     }
@@ -172,18 +177,17 @@ final class UploadersRepository
         return isset($crudObject['withFiles']) ? 'withFiles' : ($crudObject['withMedia'] ? 'withMedia' : null);
     }
 
-    private function isValidUploadField($fieldName)
+    private function isValidUploadField($crudObject, $uploaderMacro)
     {
-        if (Str::contains($fieldName, '#')) {
-            $container = Str::before($fieldName, '#');
-            $fieldName = Str::after($fieldName, '#');
-            $field = array_filter(CRUD::fields()[$container]['subfields'] ?? [], function ($item) use ($fieldName) {
-                return $item['name'] === $fieldName && in_array($item['type'], $this->getAjaxFieldUploadTypes($fieldName));
+        if (Str::contains($crudObject['name'], '#')) {
+            $container = Str::before($crudObject['name'], '#');
+            $field = array_filter(CRUD::fields()[$container]['subfields'] ?? [], function ($item) use ($crudObject, $uploaderMacro) {
+                return $item['name'] === $crudObject['name'] && in_array($item['type'], $this->getAjaxUploadTypes($uploaderMacro));
             });
 
             return ! empty($field);
         }
 
-        return isset(CRUD::fields()[$fieldName]) && in_array(CRUD::fields()[$fieldName]['type'], $this->getAjaxFieldUploadTypes($fieldName));
+        return in_array($crudObject['type'], $this->getAjaxUploadTypes($uploaderMacro));
     }
 }

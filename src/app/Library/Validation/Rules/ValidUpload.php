@@ -21,27 +21,22 @@ class ValidUpload extends BackpackCustomRule
      * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      * @return void
      */
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function validateRules(string $attribute, mixed $value): array
     {
         $entry = CrudPanelFacade::getCurrentEntry();
 
         if (! array_key_exists($attribute, $this->data) && $entry) {
-            return;
+            return [];
         }
 
-        $this->validateFieldRules($attribute, $value, $fail);
+        $fieldErrors = $this->validateFieldRules($attribute, $value);
 
         if (! empty($value) && ! empty($this->getFileRules())) {
-            $validator = Validator::make([$attribute => $value], [
-                $attribute => $this->getFileRules(),
-            ], $this->validator->customMessages, $this->validator->customAttributes);
-
-            if ($validator->fails()) {
-                foreach ($validator->errors()->messages()[$attribute] as $message) {
-                    $fail($message)->translate();
-                }
-            }
+            $fileErrors = $this->validateFileRules($attribute, $value);
         }
+
+        return array_merge($fieldErrors, $fileErrors ?? []);
+
     }
 
     public static function field(string|array|ValidationRule|Rule $rules = []): self
