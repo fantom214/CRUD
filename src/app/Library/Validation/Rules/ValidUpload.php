@@ -7,7 +7,6 @@ use Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\Validator;
 
 class ValidUpload extends BackpackCustomRule
 {
@@ -36,7 +35,6 @@ class ValidUpload extends BackpackCustomRule
         }
 
         return array_merge($fieldErrors, $fileErrors ?? []);
-
     }
 
     public static function field(string|array|ValidationRule|Rule $rules = []): self

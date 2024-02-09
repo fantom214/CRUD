@@ -2,8 +2,6 @@
 
 namespace Backpack\CRUD\app\Library\Validation\Rules;
 
-use Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
-use Closure;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
@@ -28,18 +26,18 @@ abstract class ValidFileArray extends BackpackCustomRule
     {
         $cleanAttribute = Str::afterLast($attribute, '.');
         $errors = [];
-        
-        // we validate each file individually to avoid returning messages like: `field.0` is not a pdf. 
+
+        // we validate each file individually to avoid returning messages like: `field.0` is not a pdf.
         foreach ($items as $file) {
-            if(is_file($file)) {
+            if (is_file($file)) {
                 $validator = Validator::make(
                     [
-                        $cleanAttribute => $file
-                    ], 
+                        $cleanAttribute => $file,
+                    ],
                     [
                         $cleanAttribute => $this->getFileRules(),
-                    ], 
-                    $this->validator->customMessages, 
+                    ],
+                    $this->validator->customMessages,
                     $this->validator->customAttributes
                 );
 
@@ -52,6 +50,7 @@ abstract class ValidFileArray extends BackpackCustomRule
                 }
             }
         }
+
         return $errors;
     }
 
@@ -64,6 +63,7 @@ abstract class ValidFileArray extends BackpackCustomRule
                 return false;
             }
         }
+
         return $value;
     }
 
@@ -72,32 +72,33 @@ abstract class ValidFileArray extends BackpackCustomRule
         return Arr::has($data, $attribute) ? [$attribute => Arr::get($data, $attribute)] : $data;
     }
 
-   /*  public function validateFieldRules(string $attribute, mixed $value = null, array|null $data = null, array|null $customRules = null): array
-    {
-        
-        $validatorData = $this->prepareValidatorData($data, $attribute);
+    /*  public function validateFieldRules(string $attribute, mixed $value = null, array|null $data = null, array|null $customRules = null): array
+     {
 
-        $validator = Validator::make($validatorData, [
-            $attribute => $rules,
-        ], $this->validator->customMessages, $this->validator->customAttributes);
+         $validatorData = $this->prepareValidatorData($data, $attribute);
 
-        $errors = [];
-        if ($validator->fails()) {
-            foreach ($validator->errors()->messages()[$attribute] as $message) {
-                $errors[] = $message;
-            }
-        }
-        
-        return $errors;
-    } */
+         $validator = Validator::make($validatorData, [
+             $attribute => $rules,
+         ], $this->validator->customMessages, $this->validator->customAttributes);
+
+         $errors = [];
+         if ($validator->fails()) {
+             foreach ($validator->errors()->messages()[$attribute] as $message) {
+                 $errors[] = $message;
+             }
+         }
+
+         return $errors;
+     } */
 
     /**
-     * Run both field and file validations. 
+     * Run both field and file validations.
      */
     protected function validateFieldAndFile(string $attribute, mixed $value = null, ?array $data = null, array|null $customRules = null): array
     {
         $fieldErrors = $this->validateFieldRules($attribute, $value, $data, $customRules);
         $fileErrors = $this->validateFileRules($attribute, $value);
+
         return array_merge($fieldErrors, $fileErrors);
     }
 }

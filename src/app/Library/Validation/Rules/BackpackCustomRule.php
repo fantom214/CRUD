@@ -15,9 +15,8 @@ use Illuminate\Support\Str;
  */
 abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, ValidatorAwareRule
 {
-
     use \Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
-    
+
     /**
      * @var \Illuminate\Contracts\Validation\Validator
      */
@@ -49,8 +48,9 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     {
         $value = $this->ensureValueIsValid($value);
 
-        if($value === false) {
+        if ($value === false) {
             $fail('Invalid value for the attribute.')->translate();
+
             return;
         }
 
@@ -110,7 +110,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         return $rules;
     }
 
-    // from our POV, value is always valid, each validator may have their own 
+    // from our POV, value is always valid, each validator may have their own
     // validation needs. This is the first step in the validation process.
     protected function ensureValueIsValid($value)
     {
@@ -119,7 +119,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
 
     private function validateAndGetErrors(string $attribute, mixed $value, array $rules): array
     {
-        $validator =  Validator::make($value, [
+        $validator = Validator::make($value, [
             $attribute => $rules,
         ], $this->validator->customMessages, $this->validator->customAttributes);
 
@@ -142,6 +142,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     {
         $fieldErrors = $this->validateFieldRules($attribute, $value, $data, $customRules);
         $fileErrors = $this->validateFileRules($attribute, $value);
+
         return array_merge($fieldErrors, $fileErrors);
     }
 
@@ -151,8 +152,9 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     public function validateFieldRules(string $attribute, mixed $data = null, array|null $customRules = null): array
     {
         $data = $data ?? $this->data;
-        $validationRuleAttribute = $this->getValidationAttributeString($attribute); 
+        $validationRuleAttribute = $this->getValidationAttributeString($attribute);
         $data = $this->prepareValidatorData($data, $attribute);
+
         return $this->validateAndGetErrors($validationRuleAttribute, $data, $customRules ?? $this->getFieldRules());
     }
 
@@ -161,7 +163,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         return $data;
     }
 
-    protected function validateFileRules(string $attribute, mixed $value): array 
+    protected function validateFileRules(string $attribute, mixed $value): array
     {
         return $this->validateAndGetErrors($attribute, $value, $this->getFileRules());
     }
@@ -170,5 +172,4 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     {
         return $this->validateFieldAndFile($attribute, $value);
     }
-
 }

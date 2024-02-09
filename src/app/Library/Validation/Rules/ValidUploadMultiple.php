@@ -9,7 +9,7 @@ class ValidUploadMultiple extends ValidFileArray
     public function validateRules(string $attribute, mixed $value): array
     {
         $entry = CrudPanelFacade::getCurrentEntry() !== false ? CrudPanelFacade::getCurrentEntry() : null;
-       
+
         // `upload_multiple` sends [[0 => null]] when user doesn't upload anything
         // assume that nothing changed on field so nothing is sent on the request.
         if (count($value) === 1 && empty($value[0])) {
@@ -34,7 +34,7 @@ class ValidUploadMultiple extends ValidFileArray
             $data = $this->data;
             $data[$attribute] = array_diff($value, $filesDeleted);
 
-           return $this->validateFieldAndFile($attribute, $value, $data);
+            return $this->validateFieldAndFile($attribute, $value, $data);
         }
 
         return $this->validateFieldAndFile($attribute, $value);
