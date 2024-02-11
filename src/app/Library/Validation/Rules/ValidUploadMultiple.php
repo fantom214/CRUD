@@ -3,8 +3,9 @@
 namespace Backpack\CRUD\app\Library\Validation\Rules;
 
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
+use Backpack\CRUD\app\Library\Validation\Rules\Support\ValidateArrayContract;
 
-class ValidUploadMultiple extends ValidFileArray
+class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayContract
 {
     public function validateRules(string $attribute, mixed $value): array
     {
@@ -13,11 +14,8 @@ class ValidUploadMultiple extends ValidFileArray
         // `upload_multiple` sends [[0 => null]] when user doesn't upload anything
         // assume that nothing changed on field so nothing is sent on the request.
         if (count($value) === 1 && empty($value[0])) {
-            if ($entry) {
-                unset($this->data[$attribute]);
-            } else {
-                $this->data[$attribute] = [];
-            }
+            
+            $this->data[$attribute] = [];
             $value = [];
         }
 
@@ -33,8 +31,8 @@ class ValidUploadMultiple extends ValidFileArray
 
             $data = $this->data;
             $data[$attribute] = array_diff($value, $filesDeleted);
-
-            return $this->validateFieldAndFile($attribute, $value, $data);
+            
+            return $this->validateFieldAndFile($attribute, $data);
         }
 
         return $this->validateFieldAndFile($attribute, $value);
