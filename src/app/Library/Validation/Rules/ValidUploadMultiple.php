@@ -14,7 +14,6 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
         // `upload_multiple` sends [[0 => null]] when user doesn't upload anything
         // assume that nothing changed on field so nothing is sent on the request.
         if (count($value) === 1 && empty($value[0])) {
-            
             $this->data[$attribute] = [];
             $value = [];
         }
@@ -31,7 +30,7 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
 
             $data = $this->data;
             $data[$attribute] = array_diff($value, $filesDeleted);
-            
+
             return $this->validateFieldAndFile($attribute, $data);
         }
 
