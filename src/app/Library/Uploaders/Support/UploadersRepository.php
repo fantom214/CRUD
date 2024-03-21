@@ -138,7 +138,7 @@ final class UploadersRepository
     }
 
     /**
-     * Get an ajax uploader instance for a given input name
+     * Get an ajax uploader instance for a given input name.
      */
     public function getFieldUploaderInstance(string $requestInputName): UploaderInterface
     {

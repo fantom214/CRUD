@@ -139,7 +139,8 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $validator = Validator::make($value, [
             $attribute => $rules,
         ], $this->validator->customMessages, $this->validator->customAttributes);
-        return $validator->errors()->messages()[$attribute] ?? (!empty($validator->errors()->messages()) ? current($validator->errors()->messages()) : []);
+
+        return $validator->errors()->messages()[$attribute] ?? (! empty($validator->errors()->messages()) ? current($validator->errors()->messages()) : []);
     }
 
     protected function getValidationAttributeString(string $attribute)
@@ -157,7 +158,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     protected function validateFieldAndFile(string $attribute, null|array $data = null, array|null $customRules = null): array
     {
         $fieldErrors = $this->validateFieldRules($attribute, $data, $customRules);
-       
+
         $fileErrors = $this->validateFileRules($attribute, $data);
 
         return array_merge($fieldErrors, $fileErrors);
@@ -171,6 +172,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $data = $data ?? $this->data;
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
         $data = $this->prepareValidatorData($data, $attribute);
+
         return $this->validateAndGetErrors($validationRuleAttribute, $data, $customRules ?? $this->getFieldRules());
     }
 
@@ -180,10 +182,11 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
             return Arr::has($data, $attribute) ? $data : [$attribute => Arr::get($data, $attribute)];
         }
 
-        if(Str::contains($attribute, '.')) {
+        if (Str::contains($attribute, '.')) {
             $validData = [];
-            
-            Arr::set($validData, $attribute, !is_array($data) ? $data : Arr::get($data, $attribute));
+
+            Arr::set($validData, $attribute, ! is_array($data) ? $data : Arr::get($data, $attribute));
+
             return $validData;
         }
 
@@ -203,7 +206,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         Arr::set($items, $attribute, $filesToValidate);
 
         $errors = [];
-        
+
         foreach ($filesToValidate as $key => $file) {
             $fileToValidate = [];
             Arr::set($fileToValidate, $attribute, $file);

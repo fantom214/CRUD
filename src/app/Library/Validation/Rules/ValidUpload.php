@@ -4,7 +4,6 @@ namespace Backpack\CRUD\app\Library\Validation\Rules;
 
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
 use Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
-use Closure;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
@@ -15,18 +14,16 @@ class ValidUpload extends BackpackCustomRule
     use HasFiles;
 
     /**
-     * Run the validation rule and return the array of errors
-     *
+     * Run the validation rule and return the array of errors.
      */
     public function validateRules(string $attribute, mixed $value): array
     {
         $entry = CrudPanelFacade::getCurrentEntry();
 
         if (! array_key_exists($attribute, $this->data)) {
-
             $requestAttribute = Arr::get($this->data, '_order_'.$attribute);
 
-            if($entry && Arr::get($entry->{Str::before($attribute, '.')}, Str::after($attribute, '.')) === $requestAttribute) {
+            if ($entry && Arr::get($entry->{Str::before($attribute, '.')}, Str::after($attribute, '.')) === $requestAttribute) {
                 return [];
             }
             // set the empty attribute in data
@@ -34,7 +31,7 @@ class ValidUpload extends BackpackCustomRule
         }
 
         $fieldErrors = $this->validateFieldRules($attribute, $value);
-       
+
         if (! empty($value) && ! empty($this->getFileRules())) {
             $fileErrors = $this->validateFileRules($attribute, $value);
         }
