@@ -7,29 +7,34 @@ use Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
 use Closure;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class ValidUpload extends BackpackCustomRule
 {
     use HasFiles;
 
     /**
-     * Run the validation rule.
+     * Run the validation rule and return the array of errors
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param  Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     * @return void
      */
     public function validateRules(string $attribute, mixed $value): array
     {
         $entry = CrudPanelFacade::getCurrentEntry();
 
-        if (! array_key_exists($attribute, $this->data) && $entry) {
-            return [];
+        if (! array_key_exists($attribute, $this->data)) {
+
+            $requestAttribute = Arr::get($this->data, '_order_'.$attribute);
+
+            if($entry && Arr::get($entry->{Str::before($attribute, '.')}, Str::after($attribute, '.')) === $requestAttribute) {
+                return [];
+            }
+            // set the empty attribute in data
+            Arr::set($this->data, $attribute, null);
         }
 
         $fieldErrors = $this->validateFieldRules($attribute, $value);
-
+       
         if (! empty($value) && ! empty($this->getFileRules())) {
             $fileErrors = $this->validateFileRules($attribute, $value);
         }

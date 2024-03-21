@@ -139,8 +139,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $validator = Validator::make($value, [
             $attribute => $rules,
         ], $this->validator->customMessages, $this->validator->customAttributes);
-
-        return $validator->errors()->messages()[$attribute] ?? [];
+        return $validator->errors()->messages()[$attribute] ?? (!empty($validator->errors()->messages()) ? current($validator->errors()->messages()) : []);
     }
 
     protected function getValidationAttributeString(string $attribute)
@@ -158,6 +157,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     protected function validateFieldAndFile(string $attribute, null|array $data = null, array|null $customRules = null): array
     {
         $fieldErrors = $this->validateFieldRules($attribute, $data, $customRules);
+       
         $fileErrors = $this->validateFileRules($attribute, $data);
 
         return array_merge($fieldErrors, $fileErrors);
@@ -170,16 +170,21 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     {
         $data = $data ?? $this->data;
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
-
         $data = $this->prepareValidatorData($data, $attribute);
-
         return $this->validateAndGetErrors($validationRuleAttribute, $data, $customRules ?? $this->getFieldRules());
     }
 
     protected function prepareValidatorData(array|UploadedFile $data, string $attribute): array
     {
-        if ($this->validatesArrays() && is_array($data)) {
+        if ($this->validatesArrays() && is_array($data) && ! Str::contains($attribute, '.')) {
             return Arr::has($data, $attribute) ? $data : [$attribute => Arr::get($data, $attribute)];
+        }
+
+        if(Str::contains($attribute, '.')) {
+            $validData = [];
+            
+            Arr::set($validData, $attribute, !is_array($data) ? $data : Arr::get($data, $attribute));
+            return $validData;
         }
 
         return [$attribute => $data];
@@ -187,40 +192,22 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
 
     protected function validateFileRules(string $attribute, mixed $data): array
     {
-        $data = $data ?? $this->data;
-        $items = is_array($data) && array_key_exists($attribute, $data) ? $data[$attribute] : $data;
+        $items = $this->prepareValidatorData($data ?? $this->data, $attribute);
         $items = is_array($items) ? $items : [$items];
+        $validationRuleAttribute = $this->getValidationAttributeString($attribute);
+
+        $filesToValidate = array_filter(Arr::get($items, $attribute), function ($item) {
+            return $item instanceof UploadedFile;
+        });
+
+        Arr::set($items, $attribute, $filesToValidate);
+
         $errors = [];
-        // we validate each file individually to avoid returning messages like: `field.0` is not a pdf.
-        foreach ($items as $sentFiles) {
-            if (! is_array($sentFiles)) {
-                try {
-                    if (is_file($sentFiles)) {
-                        $errors[] = $this->validateAndGetErrors($attribute, [$attribute => $sentFiles], $this->getFileRules());
-                    }
-                    continue;
-                } catch(\Exception) {
-                    $errors[] = 'Unknown datatype, aborting upload process.';
-                    break;
-                }
-            }
-
-            if (is_multidimensional_array($sentFiles)) {
-                foreach ($sentFiles as $key => $value) {
-                    foreach ($value[$attribute] as $file) {
-                        if (is_file($file)) {
-                            $errors[] = $this->validateAndGetErrors($attribute, [$attribute => $file], $this->getFileRules());
-                        }
-                    }
-                }
-                continue;
-            }
-
-            foreach ($sentFiles as $key => $value) {
-                if (is_file($value)) {
-                    $errors[] = $this->validateAndGetErrors($attribute, [$attribute => $value], $this->getFileRules());
-                }
-            }
+        
+        foreach ($filesToValidate as $key => $file) {
+            $fileToValidate = [];
+            Arr::set($fileToValidate, $attribute, $file);
+            $errors[] = $this->validateAndGetErrors($validationRuleAttribute, $fileToValidate, $this->getFileRules());
         }
 
         return array_unique(array_merge(...$errors));

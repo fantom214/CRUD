@@ -2,6 +2,16 @@
     $field['wrapper'] = $field['wrapper'] ?? $field['wrapperAttributes'] ?? [];
     $field['wrapper']['data-init-function'] = $field['wrapper']['data-init-function'] ?? 'bpFieldInitUploadMultipleElement';
     $field['wrapper']['data-field-name'] = $field['wrapper']['data-field-name'] ?? $field['name'];
+
+	if(isset($field['parentFieldName'])) {
+		if(!empty(old())) {
+			$field['value'] = array_merge(
+								explode(',',Arr::get(old(), '_order_'.square_brackets_to_dots($field['name'])) ?? ''),
+								Arr::get(old(), 'clear_'.square_brackets_to_dots($field['name'])) ?? [],
+							);
+			$field['value'] = $field['value'] === [null] ? null : $field['value'];
+		}
+	}
 @endphp
 
 {{-- upload multiple input --}}
@@ -243,7 +253,7 @@
 					}
 
 		        	// remove the hidden input, so that the setXAttribute method is no longer triggered
-					$(this).next("input[type=hidden]:not([name='clear_"+fieldName+"[]'])").remove();
+					$(this).next("input[type=hidden]:not([name='clear_"+fieldName+"[]']):not([name='_order_"+fieldName+"'])").remove();
 		        });
 
 				element.find('input').on('CrudField:disable', function(e) {
