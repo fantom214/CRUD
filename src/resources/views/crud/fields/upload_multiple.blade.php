@@ -9,7 +9,8 @@
 								explode(',',Arr::get(old(), '_order_'.square_brackets_to_dots($field['name'])) ?? ''),
 								Arr::get(old(), 'clear_'.square_brackets_to_dots($field['name'])) ?? [],
 							);
-			$field['value'] = $field['value'] === [null] ? null : $field['value'];
+			$field['value'] = is_array($field['value']) ? array_filter($field['value'] ?? []) : [];
+			$field['value'] = $field['value'] === [null] || $field['value'] === [""] ? null : $field['value'];
 		}
 	}
 @endphp

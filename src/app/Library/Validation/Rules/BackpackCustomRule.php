@@ -198,8 +198,8 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $items = $this->prepareValidatorData($data ?? $this->data, $attribute);
         $items = is_array($items) ? $items : [$items];
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
-
-        $filesToValidate = array_filter(Arr::get($items, $attribute), function ($item) {
+        $filesToValidate = $this->validatesArrays() ? Arr::get($items, $attribute) : [Arr::get($items, $attribute)];
+        $filesToValidate = array_filter($filesToValidate ?? [], function ($item) {
             return $item instanceof UploadedFile;
         });
 

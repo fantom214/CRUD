@@ -21,23 +21,22 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
         }
 
         $previousValues = str_contains($attribute, '.') ?
-                            Arr::get($entry->{Str::before($attribute, '.')}, Str::after($attribute, '.')) :
-                            $entry->{$attribute};
+                            (Arr::get($entry?->{Str::before($attribute, '.')} ?? [], Str::after($attribute, '.')) ?? []) :
+                            ($entry?->{$attribute} ?? []);
 
         if (is_string($previousValues)) {
             $previousValues = json_decode($previousValues, true) ?? [];
         }
 
-        $value = array_merge($previousValues, $value);
+        Arr::set($data, $attribute, array_merge($previousValues, $value));
 
         if ($entry) {
             $filesDeleted = CrudPanelFacade::getRequest()->input('clear_'.$attribute) ?? [];
-
-            Arr::set($data, $attribute, array_diff($value, $filesDeleted));
-
+            Arr::set($data, $attribute, array_diff(Arr::get($data, $attribute), $filesDeleted));
+            
             return $this->validateFieldAndFile($attribute, $data);
         }
 
-        return $this->validateFieldAndFile($attribute, $value);
+        return $this->validateFieldAndFile($attribute, $data);
     }
 }
