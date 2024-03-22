@@ -3,9 +3,11 @@
 namespace Backpack\CRUD\app\Library\Validation\Rules;
 
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
+use Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
 use Backpack\CRUD\app\Library\Validation\Rules\Support\ValidateArrayContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Backpack\CRUD\app\Library\Validation\Rules\BackpackCustomRule;
 
 class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayContract
 {

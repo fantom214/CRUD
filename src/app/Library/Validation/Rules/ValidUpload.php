@@ -11,8 +11,6 @@ use Illuminate\Support\Str;
 
 class ValidUpload extends BackpackCustomRule
 {
-    use HasFiles;
-
     /**
      * Run the validation rule and return the array of errors.
      */
@@ -20,7 +18,7 @@ class ValidUpload extends BackpackCustomRule
     {
         $entry = CrudPanelFacade::getCurrentEntry();
 
-        if (! array_key_exists($attribute, $this->data)) {
+        if (! Arr::has($this->data, $attribute)) {
             $requestAttribute = Arr::get($this->data, '_order_'.$attribute);
 
             if ($entry && Arr::get($entry->{Str::before($attribute, '.')}, Str::after($attribute, '.')) === $requestAttribute) {

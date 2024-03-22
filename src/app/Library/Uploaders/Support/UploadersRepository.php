@@ -5,6 +5,7 @@ namespace Backpack\CRUD\app\Library\Uploaders\Support;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 final class UploadersRepository
 {
@@ -145,9 +146,18 @@ final class UploadersRepository
         if (strpos($requestInputName, '#') !== false) {
             $repeatableContainerName = Str::before($requestInputName, '#');
             $requestInputName = Str::after($requestInputName, '#');
+
             $uploaders = $this->getRepeatableUploadersFor($repeatableContainerName);
-            //TODO: Implement the logic for repeatable uploaders
-            dd('here');
+
+            $uploader = Arr::first($uploaders, function ($uploader) use ($requestInputName) {
+                return $uploader->getName() === $requestInputName;
+            });
+            
+            if (! $uploader) {
+                abort(500, 'Could not find the field in the repeatable uploaders.');
+            }
+
+            return $uploader;
         }
 
         if (empty($crudObject = CRUD::fields()[$requestInputName])) {
@@ -172,9 +182,9 @@ final class UploadersRepository
     /**
      * Get the upload field macro type for the given object.
      */
-    private function getUploadCrudObjectMacroType(array $crudObject): string
+    private function getUploadCrudObjectMacroType(array $crudObject): string|null
     {
-        return isset($crudObject['withFiles']) ? 'withFiles' : ($crudObject['withMedia'] ? 'withMedia' : null);
+        return isset($crudObject['withFiles']) ? 'withFiles' : (isset($crudObject['withMedia']) ? 'withMedia' : null);
     }
 
     private function isValidUploadField($crudObject, $uploaderMacro)
