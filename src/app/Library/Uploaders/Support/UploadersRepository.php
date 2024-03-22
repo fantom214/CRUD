@@ -4,8 +4,8 @@ namespace Backpack\CRUD\app\Library\Uploaders\Support;
 
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
-use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 final class UploadersRepository
 {
@@ -152,7 +152,7 @@ final class UploadersRepository
             $uploader = Arr::first($uploaders, function ($uploader) use ($requestInputName) {
                 return $uploader->getName() === $requestInputName;
             });
-            
+
             if (! $uploader) {
                 abort(500, 'Could not find the field in the repeatable uploaders.');
             }

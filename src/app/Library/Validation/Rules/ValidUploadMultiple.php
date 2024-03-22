@@ -3,11 +3,9 @@
 namespace Backpack\CRUD\app\Library\Validation\Rules;
 
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
-use Backpack\CRUD\app\Library\Validation\Rules\Support\HasFiles;
 use Backpack\CRUD\app\Library\Validation\Rules\Support\ValidateArrayContract;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Backpack\CRUD\app\Library\Validation\Rules\BackpackCustomRule;
 
 class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayContract
 {
@@ -35,7 +33,7 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
         if ($entry) {
             $filesDeleted = CrudPanelFacade::getRequest()->input('clear_'.$attribute) ?? [];
             Arr::set($data, $attribute, array_diff(Arr::get($data, $attribute), $filesDeleted));
-            
+
             return $this->validateFieldAndFile($attribute, $data);
         }
 

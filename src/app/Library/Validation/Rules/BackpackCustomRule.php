@@ -172,7 +172,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $data = $data ?? $this->data;
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
         $data = $this->prepareValidatorData($data, $attribute);
-        
+
         return $this->validateAndGetErrors($validationRuleAttribute, $data, $customRules ?? $this->getFieldRules());
     }
 
