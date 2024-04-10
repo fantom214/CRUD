@@ -60,4 +60,6 @@ interface UploaderInterface
     public function isRelationship(): bool;
 
     public function getPreviousFiles(Model $entry): mixed;
+
+    public function getValueWithoutPath(?string $value = null): ?string;
 }

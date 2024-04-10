@@ -282,16 +282,16 @@ trait HandleRepeatableUploads
         return $previousValues ?? [];
     }
 
-    private function getValuesWithPathStripped(array|string|null $item, UploaderInterface $upload)
+    private function getValuesWithPathStripped(array|string|null $item, UploaderInterface $uploader)
     {
-        $uploadedValues = $item[$upload->getName()] ?? null;
+        $uploadedValues = $item[$uploader->getName()] ?? null;
         if (is_array($uploadedValues)) {
-            return array_map(function ($value) use ($upload) {
-                return Str::after($value, $upload->getPath());
+            return array_map(function ($value) use ($uploader) {
+                return $uploader->getValueWithoutPath($value);
             }, $uploadedValues);
         }
 
-        return isset($uploadedValues) ? Str::after($uploadedValues, $upload->getPath()) : null;
+        return isset($uploadedValues) ? $uploader->getValueWithoutPath($uploadedValues) : null;
     }
 
     private function deleteRelationshipFiles(Model $entry): void

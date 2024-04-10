@@ -189,6 +189,11 @@ abstract class Uploader implements UploaderInterface
         return $value[$this->getAttributeName()] ?? null;
     }
 
+    public function getValueWithoutPath(?string $value = null): ?string
+    {
+        return $value ? Str::after($value, $this->path) : null;
+    }
+
     /*******************************
      * Setters - fluently configure the uploader
      *******************************/
@@ -229,13 +234,13 @@ abstract class Uploader implements UploaderInterface
             $values = $entry->{$this->attachedToFakeField};
             $values = is_string($values) ? json_decode($values, true) : (array) $values;
 
-            $values[$this->getAttributeName()] = isset($values[$this->getAttributeName()]) ? Str::after($values[$this->getAttributeName()], $this->path) : null;
+            $values[$this->getAttributeName()] = isset($values[$this->getAttributeName()]) ? $this->getValueWithoutPath($values[$this->getAttributeName()]) : null;
             $entry->{$this->attachedToFakeField} = json_encode($values);
 
             return $entry;
         }
 
-        $entry->{$this->getAttributeName()} = Str::after($value, $this->path);
+        $entry->{$this->getAttributeName()} = $this->getValueWithoutPath($value);
 
         return $entry;
     }
@@ -277,7 +282,7 @@ abstract class Uploader implements UploaderInterface
     }
 
     /*******************************
-     * Private helper methods
+     * helper methods
      *******************************/
     private function getPathFromConfiguration(array $crudObject, array $configuration): string
     {
