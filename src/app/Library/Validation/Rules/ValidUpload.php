@@ -18,17 +18,16 @@ class ValidUpload extends BackpackCustomRule
         $entry = CrudPanelFacade::getCurrentEntry();
 
         if (! Arr::has($this->data, $attribute)) {
-            $requestAttribute = Arr::get($this->data, '_order_'.$attribute);
-
-            if ($entry && Arr::get($entry->{Str::before($attribute, '.')}, Str::after($attribute, '.')) === $requestAttribute) {
-                return [];
+            $attributeValueForDataArray = null;
+            $requestAttributeValue = Arr::get($this->data, '_order_'.$attribute);
+            if ($entry && Str::contains($attribute, '.')) {
+                $attributeValueForDataArray = $requestAttributeValue;
             }
-            // set the empty attribute in data
-            Arr::set($this->data, $attribute, null);
+            Arr::set($this->data, $attribute, $attributeValueForDataArray);
         }
 
         $fieldErrors = $this->validateFieldRules($attribute, $value);
-
+        
         if (! empty($value) && ! empty($this->getFileRules())) {
             $fileErrors = $this->validateFileRules($attribute, $value);
         }
