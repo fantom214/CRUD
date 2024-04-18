@@ -17,8 +17,12 @@ class ValidUpload extends BackpackCustomRule
         $entry = CrudPanelFacade::getCurrentEntry();
 
         if (! Arr::has($this->data, $attribute)) {
+            if($entry && ! str_contains($attribute, '.')) {
+                return [];
+            }
             $requestAttributeValue = Arr::get($this->data, '_order_'.$attribute);
             $attributeValueForDataArray = $entry ? $requestAttributeValue : null;
+            
             Arr::set($this->data, $attribute, $attributeValueForDataArray);
         }
 
