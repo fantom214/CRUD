@@ -6,7 +6,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class ValidUpload extends BackpackCustomRule
 {
@@ -18,11 +17,8 @@ class ValidUpload extends BackpackCustomRule
         $entry = CrudPanelFacade::getCurrentEntry();
 
         if (! Arr::has($this->data, $attribute)) {
-            $attributeValueForDataArray = null;
             $requestAttributeValue = Arr::get($this->data, '_order_'.$attribute);
-            if ($entry) {
-                $attributeValueForDataArray = $requestAttributeValue;
-            }
+            $attributeValueForDataArray = $entry ? $requestAttributeValue : null;
             Arr::set($this->data, $attribute, $attributeValueForDataArray);
         }
 
