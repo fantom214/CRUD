@@ -20,7 +20,7 @@ class ValidUpload extends BackpackCustomRule
         if (! Arr::has($this->data, $attribute)) {
             $attributeValueForDataArray = null;
             $requestAttributeValue = Arr::get($this->data, '_order_'.$attribute);
-            if ($entry && Str::contains($attribute, '.')) {
+            if ($entry) {
                 $attributeValueForDataArray = $requestAttributeValue;
             }
             Arr::set($this->data, $attribute, $attributeValueForDataArray);
