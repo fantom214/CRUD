@@ -51,8 +51,8 @@ class SingleBase64Image extends Uploader
             }
         }
 
-        $imagesToDelete = array_diff($previousRepeatableValues, $values);
-
+        $imagesToDelete = array_diff(array_filter($previousRepeatableValues), $values);
+        
         foreach ($imagesToDelete as $image) {
             Storage::disk($this->getDisk())->delete($image);
         }

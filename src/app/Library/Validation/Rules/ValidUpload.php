@@ -6,6 +6,7 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class ValidUpload extends BackpackCustomRule
 {
@@ -14,20 +15,25 @@ class ValidUpload extends BackpackCustomRule
      */
     public function validateRules(string $attribute, mixed $value): array
     {
+       
         $entry = CrudPanelFacade::getCurrentEntry();
 
-        if (! Arr::has($this->data, $attribute)) {
-            if ($entry && ! str_contains($attribute, '.')) {
+        if (! array_key_exists($attribute, $this->data) && $entry) {
+            if(str_contains($attribute, '.') && get_class($entry) === get_class(CrudPanelFacade::getModel())) {
+                $previousValue = Arr::get($this->data, '_order_'.Str::before($attribute, '.'));
+                $previousValue = Arr::get($previousValue, Str::after($attribute, '.'));
+            }else{
+                $previousValue = Arr::get($entry,$attribute);
+            }
+            
+            if($previousValue && empty($value)) {
                 return [];
             }
-            $requestAttributeValue = Arr::get($this->data, '_order_'.$attribute);
-            $attributeValueForDataArray = $entry ? $requestAttributeValue : null;
-
-            Arr::set($this->data, $attribute, $attributeValueForDataArray);
+            Arr::set($this->data, $attribute, $previousValue ?? $value);
         }
 
         $fieldErrors = $this->validateFieldRules($attribute, $value);
-
+       
         if (! empty($value) && ! empty($this->getFileRules())) {
             $fileErrors = $this->validateFileRules($attribute, $value);
         }
