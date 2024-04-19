@@ -15,25 +15,24 @@ class ValidUpload extends BackpackCustomRule
      */
     public function validateRules(string $attribute, mixed $value): array
     {
-       
         $entry = CrudPanelFacade::getCurrentEntry();
 
         if (! array_key_exists($attribute, $this->data) && $entry) {
-            if(str_contains($attribute, '.') && get_class($entry) === get_class(CrudPanelFacade::getModel())) {
+            if (str_contains($attribute, '.') && get_class($entry) === get_class(CrudPanelFacade::getModel())) {
                 $previousValue = Arr::get($this->data, '_order_'.Str::before($attribute, '.'));
                 $previousValue = Arr::get($previousValue, Str::after($attribute, '.'));
-            }else{
-                $previousValue = Arr::get($entry,$attribute);
+            } else {
+                $previousValue = Arr::get($entry, $attribute);
             }
-            
-            if($previousValue && empty($value)) {
+
+            if ($previousValue && empty($value)) {
                 return [];
             }
             Arr::set($this->data, $attribute, $previousValue ?? $value);
         }
 
         $fieldErrors = $this->validateFieldRules($attribute, $value);
-       
+
         if (! empty($value) && ! empty($this->getFileRules())) {
             $fileErrors = $this->validateFileRules($attribute, $value);
         }
