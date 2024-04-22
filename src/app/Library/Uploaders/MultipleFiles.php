@@ -57,6 +57,12 @@ class MultipleFiles extends Uploader
             }
         }
 
+        $previousFiles = array_values($previousFiles);
+
+        if (empty($previousFiles)) {
+            return null;
+        }
+
         return isset($entry->getCasts()[$this->getName()]) ? $previousFiles : json_encode($previousFiles);
     }
 
