@@ -179,7 +179,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     protected function prepareValidatorData(array|string|UploadedFile $data, string $attribute): array
     {
         if ($this->validatesArrays() && is_array($data) && ! Str::contains($attribute, '.')) {
-            return Arr::has($data, $attribute) ? $data : [$attribute => Arr::get($data, $attribute)];
+            return Arr::has($data, $attribute) ? $data : [$attribute => $data];
         }
 
         if (Str::contains($attribute, '.')) {
@@ -190,7 +190,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
             return $validData;
         }
 
-        return [$attribute => is_array($data) ? Arr::get($data, $attribute) : $data];
+        return [$attribute => is_array($data) ? (Arr::get($data, $attribute) ?? $data) : $data];
     }
 
     protected function validateFileRules(string $attribute, mixed $data): array
@@ -198,7 +198,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $items = $this->prepareValidatorData($data ?? $this->data, $attribute);
         $items = is_array($items) ? $items : [$items];
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
-        $filesToValidate = $this->validatesArrays() ? Arr::get($items, $attribute) : [Arr::get($items, $attribute)];
+        $filesToValidate = Arr::get($items, $attribute);
         $filesToValidate = array_filter($filesToValidate ?? [], function ($item) {
             return $item instanceof UploadedFile;
         });
