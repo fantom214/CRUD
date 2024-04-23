@@ -3,6 +3,7 @@
 namespace Backpack\CRUD\app\Library\Validation\Rules;
 
 use Backpack\CRUD\app\Library\Validation\Rules\Support\ValidateArrayContract;
+use Backpack\Pro\Uploads\Validation\ValidGenericAjaxEndpoint;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
@@ -138,11 +139,19 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
     {
         $validator = Validator::make($value, [
             $attribute => $rules,
-        ], $this->validator->customMessages, $this->validator->customAttributes);
-
+        ], $this->validator->customMessages, $this->getValidatorCustomAttributes($attribute));
+       
         return $validator->errors()->messages()[$attribute] ?? (! empty($validator->errors()->messages()) ? current($validator->errors()->messages()) : []);
     }
 
+    private function getValidatorCustomAttributes(string $attribute): array
+    {
+        if(! is_a($this, ValidGenericAjaxEndpoint::class) && ! Str::contains($attribute, '.*.')) {
+            return $this->validator->customAttributes;
+        }
+        // generic fallback to `profile picture` from `profile.*.picture`
+        return [$attribute => Str::replace('.*.', ' ', $attribute)];
+    }
     protected function getValidationAttributeString(string $attribute)
     {
         return Str::substrCount($attribute, '.') > 1 ?
@@ -198,15 +207,17 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $items = $this->prepareValidatorData($data ?? $this->data, $attribute);
         $items = is_array($items) ? $items : [$items];
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
+        
         $filesToValidate = Arr::get($items, $attribute);
-        $filesToValidate = array_filter($filesToValidate ?? [], function ($item) {
+        $filesToValidate = is_array($filesToValidate) ? array_filter($filesToValidate, function ($item) {
             return $item instanceof UploadedFile;
-        });
+        }) : (is_a($filesToValidate, UploadedFile::class, true) ? [$filesToValidate] : []);
 
         Arr::set($items, $attribute, $filesToValidate);
 
         $errors = [];
 
+        // validate each file individually
         foreach ($filesToValidate as $key => $file) {
             $fileToValidate = [];
             Arr::set($fileToValidate, $attribute, $file);
