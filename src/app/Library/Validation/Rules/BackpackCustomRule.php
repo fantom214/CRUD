@@ -140,18 +140,20 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $validator = Validator::make($value, [
             $attribute => $rules,
         ], $this->validator->customMessages, $this->getValidatorCustomAttributes($attribute));
-       
+
         return $validator->errors()->messages()[$attribute] ?? (! empty($validator->errors()->messages()) ? current($validator->errors()->messages()) : []);
     }
 
     private function getValidatorCustomAttributes(string $attribute): array
     {
-        if(! is_a($this, ValidGenericAjaxEndpoint::class) && ! Str::contains($attribute, '.*.')) {
+        if (! is_a($this, ValidGenericAjaxEndpoint::class) && ! Str::contains($attribute, '.*.')) {
             return $this->validator->customAttributes;
         }
+
         // generic fallback to `profile picture` from `profile.*.picture`
         return [$attribute => Str::replace('.*.', ' ', $attribute)];
     }
+
     protected function getValidationAttributeString(string $attribute)
     {
         return Str::substrCount($attribute, '.') > 1 ?
@@ -207,7 +209,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
         $items = $this->prepareValidatorData($data ?? $this->data, $attribute);
         $items = is_array($items) ? $items : [$items];
         $validationRuleAttribute = $this->getValidationAttributeString($attribute);
-        
+
         $filesToValidate = Arr::get($items, $attribute);
         $filesToValidate = is_array($filesToValidate) ? array_filter($filesToValidate, function ($item) {
             return $item instanceof UploadedFile;
