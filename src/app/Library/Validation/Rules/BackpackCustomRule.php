@@ -200,6 +200,7 @@ abstract class BackpackCustomRule implements ValidationRule, DataAwareRule, Vali
 
             return $validData;
         }
+
         return [$attribute => is_array($data) ? (Arr::has($data, $attribute) ? Arr::get($data, $attribute) : $data) : $data];
     }
 

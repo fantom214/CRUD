@@ -5,9 +5,9 @@ namespace Backpack\CRUD\app\Library\Validation\Rules;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Http\UploadedFile;
 
 class ValidUpload extends BackpackCustomRule
 {
@@ -19,7 +19,7 @@ class ValidUpload extends BackpackCustomRule
         $entry = CrudPanelFacade::getCurrentEntry();
 
         // if the attribute is not set in the request, and an entry exists,
-        // we will check if there is a previous value, as this field might not have changed. 
+        // we will check if there is a previous value, as this field might not have changed.
         if (! Arr::has($this->data, $attribute) && $entry) {
             if (str_contains($attribute, '.') && get_class($entry) === get_class(CrudPanelFacade::getModel())) {
                 $previousValue = Arr::get($this->data, '_order_'.Str::before($attribute, '.'));
@@ -37,10 +37,10 @@ class ValidUpload extends BackpackCustomRule
 
         // if the value is an uploaded file, or the attribute is not
         // set in the request, we force fill the data with the value
-        if($value instanceof UploadedFile || ! Arr::has($this->data, $attribute)) {
+        if ($value instanceof UploadedFile || ! Arr::has($this->data, $attribute)) {
             Arr::set($this->data, $attribute, $value);
         }
-        
+
         $fieldErrors = $this->validateFieldRules($attribute);
 
         if (! empty($value) && ! empty($this->getFileRules())) {
