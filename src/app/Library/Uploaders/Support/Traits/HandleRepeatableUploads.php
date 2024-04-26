@@ -54,13 +54,12 @@ trait HandleRepeatableUploads
         $value = $this->mergeValuesRecursive($values, $files);
 
         $processedEntryValues = $this->processRepeatableUploads($entry, $value);
-        
-        $entry->{$this->getRepeatableContainerName()} = empty($processedEntryValues) 
-                                                        ? null
-                                                        : (isset($entry->getCasts()[$this->getRepeatableContainerName()]) 
-                                                            ? $processedEntryValues 
-                                                            : json_encode($processedEntryValues));
 
+        $entry->{$this->getRepeatableContainerName()} = empty($processedEntryValues)
+                                                        ? null
+                                                        : (isset($entry->getCasts()[$this->getRepeatableContainerName()])
+                                                            ? $processedEntryValues
+                                                            : json_encode($processedEntryValues));
 
         return $entry;
     }
@@ -282,7 +281,7 @@ trait HandleRepeatableUploads
     {
         $previousValues = $entry->getOriginal($uploader->getRepeatableContainerName());
 
-        if( !is_array($previousValues)) {
+        if (! is_array($previousValues)) {
             $previousValues = json_decode($previousValues, true);
         }
 
