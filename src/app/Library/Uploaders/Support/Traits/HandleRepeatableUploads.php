@@ -53,7 +53,14 @@ trait HandleRepeatableUploads
         $files = collect(CRUD::getRequest()->file($this->getRepeatableContainerName()));
         $value = $this->mergeValuesRecursive($values, $files);
 
-        $entry->{$this->getRepeatableContainerName()} = json_encode($this->processRepeatableUploads($entry, $value));
+        $processedEntryValues = $this->processRepeatableUploads($entry, $value);
+        
+        $entry->{$this->getRepeatableContainerName()} = empty($processedEntryValues) 
+                                                        ? null
+                                                        : (isset($entry->getCasts()[$this->getRepeatableContainerName()]) 
+                                                            ? $processedEntryValues 
+                                                            : json_encode($processedEntryValues));
+
 
         return $entry;
     }
@@ -127,7 +134,7 @@ trait HandleRepeatableUploads
         return $entryValue === false || $entryValue === null || $entryValue === [null];
     }
 
-    protected function processRepeatableUploads(Model $entry, Collection $values): Collection
+    protected function processRepeatableUploads(Model $entry, Collection $values): array
     {
         foreach (app('UploadersRepository')->getRepeatableUploadersFor($this->getRepeatableContainerName()) as $uploader) {
             $uploadedValues = $uploader->uploadRepeatableFiles($values->pluck($uploader->getAttributeName())->toArray(), $this->getPreviousRepeatableValues($entry, $uploader));
@@ -139,7 +146,7 @@ trait HandleRepeatableUploads
             });
         }
 
-        return $values;
+        return $values->toArray();
     }
 
     private function retrieveRepeatableFiles(Model $entry): Model
@@ -158,7 +165,7 @@ trait HandleRepeatableUploads
             }
 
             return $item;
-        }, $values);
+        }, $values ?? []);
 
         $entry->{$this->getRepeatableContainerName()} = $values;
 
@@ -273,7 +280,11 @@ trait HandleRepeatableUploads
 
     private function getPreviousRepeatableValues(Model $entry, UploaderInterface $uploader): array
     {
-        $previousValues = json_decode($entry->getOriginal($uploader->getRepeatableContainerName()), true);
+        $previousValues = $entry->getOriginal($uploader->getRepeatableContainerName());
+
+        if( !is_array($previousValues)) {
+            $previousValues = json_decode($previousValues, true);
+        }
 
         if (! empty($previousValues)) {
             $previousValues = array_column($previousValues, $uploader->getName());
