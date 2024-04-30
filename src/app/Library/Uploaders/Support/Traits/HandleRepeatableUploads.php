@@ -217,7 +217,8 @@ trait HandleRepeatableUploads
             return;
         }
 
-        $repeatableValues = collect($entry->{$this->getName()});
+        $repeatableValues = collect($entry->{$this->getRepeatableContainerName()});
+
         foreach (app('UploadersRepository')->getRepeatableUploadersFor($this->getRepeatableContainerName()) as $upload) {
             if (! $upload->shouldDeleteFiles()) {
                 continue;

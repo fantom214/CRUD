@@ -249,10 +249,11 @@ abstract class Uploader implements UploaderInterface
     {
         $values = $entry->{$this->getAttributeName()};
 
-        if ($values === null) {
+        if(! $this->shouldDeleteFiles() || $values === null)
+        {
             return;
         }
-
+       
         if ($this->handleMultipleFiles) {
             // ensure we have an array of values when field is not casted in model.
             if (! isset($entry->getCasts()[$this->name]) && is_string($values)) {
