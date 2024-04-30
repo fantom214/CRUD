@@ -56,10 +56,10 @@ trait HandleRepeatableUploads
 
         $processedEntryValues = $this->processRepeatableUploads($entry, $value);
 
-        if($this->isFake()) {
+        if ($this->isFake()) {
             $fakeValues = $entry->{$this->getFakeAttribute()} ?? [];
 
-            if(is_string($fakeValues)) {
+            if (is_string($fakeValues)) {
                 $fakeValues = json_decode($fakeValues, true);
             }
 
@@ -72,6 +72,7 @@ trait HandleRepeatableUploads
             $entry->{$this->getFakeAttribute()} = isset($entry->getCasts()[$this->getFakeAttribute()])
                                                             ? $fakeValues
                                                             : json_encode($fakeValues);
+
             return $entry;
         }
 
@@ -178,9 +179,9 @@ trait HandleRepeatableUploads
 
         if ($this->attachedToFakeField) {
             $values = $entry->{$this->attachedToFakeField};
-           
+
             $values = is_string($values) ? json_decode($values, true) : $values;
-           
+
             $values[$this->getAttributeName()] = isset($values[$this->getAttributeName()]) ? $this->getValueWithoutPath($values[$this->getAttributeName()]) : null;
             $entry->{$this->attachedToFakeField} = isset($entry->getCasts()[$this->attachedToFakeField]) ? $values : json_encode($values);
 
