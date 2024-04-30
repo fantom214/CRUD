@@ -51,9 +51,29 @@ trait HandleRepeatableUploads
 
         $values = collect(CRUD::getRequest()->get($this->getRepeatableContainerName()));
         $files = collect(CRUD::getRequest()->file($this->getRepeatableContainerName()));
+
         $value = $this->mergeValuesRecursive($values, $files);
 
         $processedEntryValues = $this->processRepeatableUploads($entry, $value);
+
+        if($this->isFake()) {
+            $fakeValues = $entry->{$this->getFakeAttribute()} ?? [];
+
+            if(is_string($fakeValues)) {
+                $fakeValues = json_decode($fakeValues, true);
+            }
+
+            $fakeValues[$this->getRepeatableContainerName()] = empty($processedEntryValues)
+                                                        ? null
+                                                        : (isset($entry->getCasts()[$this->getFakeAttribute()])
+                                                            ? $processedEntryValues
+                                                            : json_encode($processedEntryValues));
+
+            $entry->{$this->getFakeAttribute()} = isset($entry->getCasts()[$this->getFakeAttribute()])
+                                                            ? $fakeValues
+                                                            : json_encode($fakeValues);
+            return $entry;
+        }
 
         $entry->{$this->getRepeatableContainerName()} = empty($processedEntryValues)
                                                         ? null
@@ -156,7 +176,18 @@ trait HandleRepeatableUploads
 
         $repeatableUploaders = app('UploadersRepository')->getRepeatableUploadersFor($this->getRepeatableContainerName());
 
-        $values = $entry->{$this->getRepeatableContainerName()};
+        if ($this->attachedToFakeField) {
+            $values = $entry->{$this->attachedToFakeField};
+           
+            $values = is_string($values) ? json_decode($values, true) : $values;
+           
+            $values[$this->getAttributeName()] = isset($values[$this->getAttributeName()]) ? $this->getValueWithoutPath($values[$this->getAttributeName()]) : null;
+            $entry->{$this->attachedToFakeField} = isset($entry->getCasts()[$this->attachedToFakeField]) ? $values : json_encode($values);
+
+            return $entry;
+        }
+
+        $values = $entry->{$this->getAttributeName()};
         $values = is_string($values) ? json_decode($values, true) : $values;
         $values = array_map(function ($item) use ($repeatableUploaders) {
             foreach ($repeatableUploaders as $upload) {
@@ -217,7 +248,13 @@ trait HandleRepeatableUploads
             return;
         }
 
-        $repeatableValues = collect($entry->{$this->getRepeatableContainerName()});
+        if ($this->attachedToFakeField) {
+            $repeatableValues = $entry->{$this->attachedToFakeField}[$this->getRepeatableContainerName()] ?? null;
+            $repeatableValues = is_string($repeatableValues) ? json_decode($repeatableValues, true) : $repeatableValues;
+            $repeatableValues = collect($repeatableValues);
+        }
+
+        $repeatableValues ??= collect($entry->{$this->getRepeatableContainerName()});
 
         foreach (app('UploadersRepository')->getRepeatableUploadersFor($this->getRepeatableContainerName()) as $upload) {
             if (! $upload->shouldDeleteFiles()) {

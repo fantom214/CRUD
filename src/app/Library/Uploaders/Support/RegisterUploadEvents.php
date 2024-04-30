@@ -60,6 +60,7 @@ final class RegisterUploadEvents
         $uploader = $this->getUploader($subfield, $this->uploaderConfiguration);
         $crudObject = $this->crudObject->getAttributes();
         $uploader = $uploader->repeats($crudObject['name']);
+        $uploader = $uploader->fake((isset($crudObject['fake']) && $crudObject['fake']) ? ($crudObject['store_in'] ?? 'extras') : false);
 
         // If this uploader is already registered bail out. We may endup here multiple times when doing modifications to the crud object.
         // Changing `subfields` properties will call the macros again. We prevent duplicate entries by checking
