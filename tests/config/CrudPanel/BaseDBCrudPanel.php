@@ -28,7 +28,7 @@ abstract class BaseDBCrudPanel extends BaseCrudPanel
         // call migrations specific to our tests
         $this->loadMigrationsFrom([
             '--database' => 'testing',
-            '--path'     => realpath(__DIR__.'/../../config/database/migrations'),
+            '--path' => realpath(__DIR__.'/../../config/database/migrations'),
         ]);
 
         $this->seed('Backpack\CRUD\Tests\config\database\seeds\UsersRolesTableSeeder');

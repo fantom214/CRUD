@@ -3,8 +3,8 @@
 namespace Backpack\CRUD\Tests\config\Http\Controllers;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
-use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Backpack\CRUD\Tests\config\Models\Uploader;
 
 class UploaderCrudController extends CrudController
 {
@@ -13,7 +13,6 @@ class UploaderCrudController extends CrudController
 
     public function setup()
     {
-       
         CRUD::setModel(Uploader::class);
         CRUD::setRoute(config('backpack.base.route_prefix').'/uploader');
         CRUD::setEntityNameStrings('uploader', 'uploaders');

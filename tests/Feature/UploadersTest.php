@@ -34,7 +34,7 @@ class UploadersTest extends BaseDBCrudPanel
 
         $this->actingAs(User::find(1));
         $response = $this->post(config('backpack.base.route_prefix').'/uploader', [
-            'upload'          => UploadedFile::fake()->image('avatar.jpg'),
+            'upload' => UploadedFile::fake()->image('avatar.jpg'),
 
         ]);
         //dd($response);
