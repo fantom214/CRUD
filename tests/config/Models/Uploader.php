@@ -19,7 +19,5 @@ class Uploader extends Model
         //'upload_multiple' => 'json',
     ];
 
-    public $incrementing = false;
-
     public $timestamps = false;
 }
