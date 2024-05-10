@@ -10,6 +10,7 @@ class UploaderCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 
     public function setup()
     {
@@ -22,11 +23,16 @@ class UploaderCrudController extends CrudController
     {
         //CRUD::setValidation(UploaderRequest::class);
 
-        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders']);
-        CRUD::field('upload_multiple')->type('upload_multiple')->withFiles(['disk' => 'uploaders']);
+        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'fileNamer' => fn($value) => $value->getClientOriginalName()]);
+        CRUD::field('upload_multiple')->type('upload_multiple')->withFiles(['disk' => 'uploaders', 'fileNamer' => fn($value) => $value->getClientOriginalName()]);
     }
 
     protected function setupUpdateOperation()
+    {
+        $this->setupCreateOperation();
+    }
+
+    public function setupDeleteOperation()
     {
         $this->setupCreateOperation();
     }

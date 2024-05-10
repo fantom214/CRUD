@@ -12,6 +12,7 @@ return new class() extends Migration
     public function up(): void
     {
         Schema::create('uploaders', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('upload')->nullable();
             $table->text('upload_multiple')->nullable();
         });
