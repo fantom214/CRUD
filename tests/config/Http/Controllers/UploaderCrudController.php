@@ -23,8 +23,8 @@ class UploaderCrudController extends CrudController
     {
         //CRUD::setValidation(UploaderRequest::class);
 
-        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'fileNamer' => fn($value) => $value->getClientOriginalName()]);
-        CRUD::field('upload_multiple')->type('upload_multiple')->withFiles(['disk' => 'uploaders', 'fileNamer' => fn($value) => $value->getClientOriginalName()]);
+        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'fileNamer' => fn ($value) => $value->getClientOriginalName()]);
+        CRUD::field('upload_multiple')->type('upload_multiple')->withFiles(['disk' => 'uploaders', 'fileNamer' => fn ($value) => $value->getClientOriginalName()]);
     }
 
     protected function setupUpdateOperation()
