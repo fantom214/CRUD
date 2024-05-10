@@ -72,9 +72,9 @@ class UploadersTest extends BaseDBCrudPanel
 
         $response->assertStatus(200);
 
-        $response->assertSee('avatar.jpg');
         $response->assertSee('avatar1.jpg');
         $response->assertSee('avatar2.jpg');
+        $response->assertSee('avatar3.jpg');
     }
 
     public function test_it_can_update_uploaded_files()
