@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Backpack\CRUD\Tests\Config\CrudPanel\BaseDBCrudPanel;
+use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderCrudController;
 use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
