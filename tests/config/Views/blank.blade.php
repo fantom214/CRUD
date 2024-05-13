@@ -1,5 +1,5 @@
 
-@extends(backpack_view('layouts.' . (backpack_theme_config('layout') ?? 'vertical')))
+@extends('admin_layout')
 
 @php
 	// Merge widgets that were fluently declared with widgets declared without the fluent syntax:
