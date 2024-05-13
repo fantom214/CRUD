@@ -27,8 +27,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         Storage::fake('uploaders');
         $this->actingAs(User::find(1));
     }
-    
-    
+
     public function test_it_can_access_the_uploaders_create_page()
     {
         $response = $this->get($this->testBaseUrl.'/create');
@@ -38,7 +37,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => UploadedFile::fake()->create('avatar.pdf'),
+            'upload' => UploadedFile::fake()->create('avatar.pdf'),
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf'), UploadedFile::fake()->create('avatar2.pdf')],
         ]);
 
@@ -53,7 +52,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertEquals(3, count($files));
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar.pdf',
+            'upload' => 'avatar.pdf',
             'upload_multiple' => json_encode(['avatar1.pdf',  'avatar2.pdf']),
         ]);
 
@@ -88,10 +87,10 @@ class UploadersValidationTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload'                => UploadedFile::fake()->create('avatar4.pdf'),
-            'upload_multiple'       => [UploadedFile::fake()->create('avatar5.pdf'), UploadedFile::fake()->create('avatar6.pdf')],
+            'upload' => UploadedFile::fake()->create('avatar4.pdf'),
+            'upload_multiple' => [UploadedFile::fake()->create('avatar5.pdf'), UploadedFile::fake()->create('avatar6.pdf')],
             'clear_upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
-            'id'                    => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -101,7 +100,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar4.pdf',
+            'upload' => 'avatar4.pdf',
             'upload_multiple' => json_encode(['avatar5.pdf',  'avatar6.pdf']),
         ]);
 
@@ -113,7 +112,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertTrue(Storage::disk('uploaders')->exists('avatar5.pdf'));
         $this->assertTrue(Storage::disk('uploaders')->exists('avatar6.pdf'));
     }
-    
+
     public function test_it_can_delete_uploaded_files()
     {
         self::initUploaderWithImages();
@@ -135,7 +134,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
         $response = $this->put($this->testBaseUrl.'/1', [
             'upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
-            'id'              => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -145,7 +144,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar1.pdf',
+            'upload' => 'avatar1.pdf',
             'upload_multiple' => json_encode(['avatar2.pdf',  'avatar3.pdf']),
         ]);
 
@@ -163,9 +162,9 @@ class UploadersValidationTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload_multiple'       => [UploadedFile::fake()->create('avatar4.pdf'), UploadedFile::fake()->create('avatar5.pdf')],
+            'upload_multiple' => [UploadedFile::fake()->create('avatar4.pdf'), UploadedFile::fake()->create('avatar5.pdf')],
             'clear_upload_multiple' => ['avatar2.pdf'],
-            'id'                    => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -175,7 +174,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar1.pdf',
+            'upload' => 'avatar1.pdf',
             'upload_multiple' => json_encode(['avatar3.pdf', 'avatar4.pdf',  'avatar5.pdf']),
         ]);
 
@@ -192,7 +191,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_files_on_a_single_upload()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => 'not-a-file',
+            'upload' => 'not-a-file',
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf'), UploadedFile::fake()->create('avatar2.pdf')],
         ]);
 
@@ -205,23 +204,23 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_files_on_multiple_uploader()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => UploadedFile::fake()->create('avatar.pdf'),
+            'upload' => UploadedFile::fake()->create('avatar.pdf'),
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf'), 'not-a-file'],
         ]);
-        
+
         $response->assertStatus(302);
         $response->assertSessionHasErrors('upload_multiple');
 
         $this->assertDatabaseCount('uploaders', 0);
     }
-   
+
     public function test_it_validates_mime_types_on_single_and_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => UploadedFile::fake()->create('avatar2.jpg'),
+            'upload' => UploadedFile::fake()->create('avatar2.jpg'),
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.jpg'), UploadedFile::fake()->create('avatar3.jpg')],
         ]);
-        
+
         $response->assertStatus(302);
 
         $response->assertSessionHasErrors('upload_multiple');
@@ -237,7 +236,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_file_size_on_single_and_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => UploadedFile::fake()->create('avatar.pdf', 2000),
+            'upload' => UploadedFile::fake()->create('avatar.pdf', 2000),
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf', 2000), UploadedFile::fake()->create('avatar2.pdf', 2000)],
         ]);
 
@@ -252,11 +251,11 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
         $this->assertDatabaseCount('uploaders', 0);
     }
-    
+
     public function test_it_validates_min_files_on_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => UploadedFile::fake()->create('avatar.pdf'),
+            'upload' => UploadedFile::fake()->create('avatar.pdf'),
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf')],
         ]);
 
@@ -273,7 +272,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_required_files_on_single_and_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => null,
+            'upload' => null,
             'upload_multiple' => null,
         ]);
 
@@ -289,7 +288,6 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 0);
     }
 
-    
     public function test_it_validates_required_when_not_present_in_request()
     {
         $response = $this->post($this->testBaseUrl, []);
@@ -304,15 +302,16 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
         $this->assertDatabaseCount('uploaders', 0);
     }
+
     #[Group('fail')]
     public function test_it_validates_required_files_on_single_and_multi_uploads_when_updating()
     {
         self::initUploader();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload'          => null,
+            'upload' => null,
             'upload_multiple' => null,
-            'id'              => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -326,16 +325,16 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
         $this->assertDatabaseCount('uploaders', 1);
     }
-    
+
     public function test_it_validates_required_files_on_single_and_multi_uploads_when_updating_with_files()
     {
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload'          => null,
+            'upload' => null,
             'upload_multiple' => null,
             'clear_upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
-            'id'              => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -349,7 +348,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
         $this->assertDatabaseCount('uploaders', 1);
     }
-    
+
     #[Group('fail')]
     public function test_it_validates_min_files_on_multi_uploads_when_updating()
     {
@@ -358,7 +357,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $response = $this->put($this->testBaseUrl.'/1', [
             'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf')],
             'clear_upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
-            'id'              => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -378,7 +377,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         UploadedFile::fake()->image('avatar3.jpg')->storeAs('', 'avatar3.jpg', ['disk' => 'uploaders']);
 
         Uploader::create([
-            'upload'          => 'avatar1.jpg',
+            'upload' => 'avatar1.jpg',
             'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
     }
@@ -390,7 +389,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         UploadedFile::fake()->create('avatar3.pdf')->storeAs('', 'avatar3.pdf', ['disk' => 'uploaders']);
 
         Uploader::create([
-            'upload'          => 'avatar1.pdf',
+            'upload' => 'avatar1.pdf',
             'upload_multiple' => json_encode(['avatar2.pdf',  'avatar3.pdf']),
         ]);
     }
@@ -398,7 +397,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
     protected static function initUploader()
     {
         Uploader::create([
-            'upload'          => null,
+            'upload' => null,
             'upload_multiple' => null,
         ]);
     }

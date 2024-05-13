@@ -36,7 +36,7 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
 
             return $this->validateFieldAndFile($attribute, $data);
         }
-       
+
         // if there is no entry, the values we are going to validate need to be files
         // the request was tampered so we will set the attribute to null
         if (! $entry && ! empty(Arr::get($data, $attribute)) && ! $this->allFiles(Arr::get($data, $attribute))) {
@@ -45,7 +45,6 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
 
         return $this->validateFieldAndFile($attribute, $data);
     }
-
 
     private function allFiles(array $values): bool
     {

@@ -2,9 +2,9 @@
 
 namespace Backpack\CRUD\Tests\config\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Backpack\CRUD\app\Library\Validation\Rules\ValidUpload;
 use Backpack\CRUD\app\Library\Validation\Rules\ValidUploadMultiple;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UploaderRequest extends FormRequest
 {

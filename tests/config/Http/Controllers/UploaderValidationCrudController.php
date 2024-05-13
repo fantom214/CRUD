@@ -4,8 +4,8 @@ namespace Backpack\CRUD\Tests\config\Http\Controllers;
 
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
-use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Http\Requests\UploaderRequest;
+use Backpack\CRUD\Tests\config\Models\Uploader;
 
 class UploaderValidationCrudController extends CrudController
 {
