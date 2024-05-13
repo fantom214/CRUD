@@ -41,6 +41,11 @@ class ValidUpload extends BackpackCustomRule
             Arr::set($this->data, $attribute, $value);
         }
 
+        // if there are no entry, and the new value it's not a file ... well we don't want it at all.
+        if (! $entry && ! $value instanceof UploadedFile) {
+            Arr::set($this->data, $attribute, null);
+        }
+        
         $fieldErrors = $this->validateFieldRules($attribute);
 
         if (! empty($value) && ! empty($this->getFileRules())) {

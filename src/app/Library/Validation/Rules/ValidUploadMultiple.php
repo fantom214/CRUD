@@ -36,7 +36,25 @@ class ValidUploadMultiple extends BackpackCustomRule implements ValidateArrayCon
 
             return $this->validateFieldAndFile($attribute, $data);
         }
+       
+        // if there is no entry, the values we are going to validate need to be files
+        // the request was tampered so we will set the attribute to null
+        if (! $entry && ! empty(Arr::get($data, $attribute)) && ! $this->allFiles(Arr::get($data, $attribute))) {
+            Arr::set($data, $attribute, null);
+        }
 
         return $this->validateFieldAndFile($attribute, $data);
+    }
+
+
+    private function allFiles(array $values): bool
+    {
+        foreach ($values as $value) {
+            if (! $value instanceof \Illuminate\Http\UploadedFile) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

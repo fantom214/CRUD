@@ -23,6 +23,7 @@
     <include>
       <directory suffix=".php">./src/app/Library/CrudPanel/Traits/</directory>
       <directory>./src/app/Library/Validation/</directory>
+      <directory>./src/app/Library/Uploaders/</directory>
       <directory suffix=".php">./src/app/Library/CrudPanel/</directory>
       <directory suffix=".php">./src/app/Models/Traits/</directory>
       <file>./src/app/Library/Widget.php</file>
