@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderValidationCrudController;

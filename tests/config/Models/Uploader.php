@@ -13,7 +13,7 @@ class Uploader extends Model
      *
      * @var array
      */
-    protected $fillable = ['upload', 'upload_multiple'];
+    protected $fillable = ['upload', 'upload_multiple', 'extras'];
 
     protected $casts = [
         //'upload_multiple' => 'json',
