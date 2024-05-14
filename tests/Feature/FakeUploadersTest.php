@@ -3,10 +3,10 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\FakeUploaderCrudController;
 use Backpack\CRUD\Tests\config\Models\FakeUploader;
 use Backpack\CRUD\Tests\config\Models\User;
-use Backpack\CRUD\Tests\config\HasUploadedFiles;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
@@ -147,7 +147,7 @@ class FakeUploadersTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->delete($this->testBaseUrl.'/1');
-        
+
         $response->assertStatus(200);
 
         $this->assertDatabaseCount('uploaders', 0);

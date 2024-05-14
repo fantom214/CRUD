@@ -3,13 +3,12 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderCrudController;
 use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use PHPUnit\Framework\Attributes\Group;
-use Backpack\CRUD\Tests\config\HasUploadedFiles;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader

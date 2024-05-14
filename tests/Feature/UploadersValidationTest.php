@@ -3,13 +3,13 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderValidationCrudController;
 use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
-use Backpack\CRUD\Tests\config\HasUploadedFiles;
 
 /**
  * @covers Backpack\CRUD\app\Library\Validation\Rules\BackpackCustomRule
@@ -97,7 +97,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
         $response = $this->put($this->testBaseUrl.'/1', [
             'upload' => $this->getUploadedFile('avatar4.jpg'),
-            'upload_multiple' =>  $this->getUploadedFiles(['avatar5.jpg',  'avatar6.jpg']),
+            'upload_multiple' => $this->getUploadedFiles(['avatar5.jpg',  'avatar6.jpg']),
             'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
@@ -246,7 +246,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
     {
         $response = $this->post($this->testBaseUrl, [
             'upload' => $this->getUploadedFile('avatar1_big.jpg'),
-            'upload_multiple' => $this->getUploadedFiles(['avatar2_big.jpg', 'avatar3_big.jpg'])
+            'upload_multiple' => $this->getUploadedFiles(['avatar2_big.jpg', 'avatar3_big.jpg']),
         ]);
 
         $response->assertStatus(302);

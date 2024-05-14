@@ -3,13 +3,11 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderConfigurationCrudController;
 use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use PHPUnit\Framework\Attributes\Group;
-use Backpack\CRUD\Tests\config\HasUploadedFiles;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader
@@ -49,9 +47,9 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
             'upload' => $this->getUploadedFile('avatar1.jpg'),
             'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
-        
+
         $response->assertStatus(302);
-        
+
         $response->assertRedirect($this->testBaseUrl);
 
         $this->assertDatabaseCount('uploaders', 1);
