@@ -6,8 +6,10 @@ use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
 use Backpack\CRUD\Tests\config\Http\Controllers\FakeUploaderCrudController;
 use Backpack\CRUD\Tests\config\Models\FakeUploader;
 use Backpack\CRUD\Tests\config\Models\User;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader
@@ -16,6 +18,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class FakeUploadersTest extends BaseDBCrudPanel
 {
+    use HasUploadedFiles;
+
     protected string $testBaseUrl;
 
     protected function defineRoutes($router)
@@ -31,6 +35,7 @@ class FakeUploadersTest extends BaseDBCrudPanel
         $this->testBaseUrl = config('backpack.base.route_prefix').'/fake-uploader';
     }
 
+    #[Group('fail')]
     public function test_it_can_access_the_uploaders_create_page()
     {
         $response = $this->get($this->testBaseUrl.'/create');
@@ -142,7 +147,7 @@ class FakeUploadersTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->delete($this->testBaseUrl.'/1');
-
+        
         $response->assertStatus(200);
 
         $this->assertDatabaseCount('uploaders', 0);
@@ -226,17 +231,5 @@ class FakeUploadersTest extends BaseDBCrudPanel
         FakeUploader::create([
             'extras' => ['upload' => null, 'upload_multiple' => null],
         ]);
-    }
-
-    protected function getUploadedFile(string $fileName)
-    {
-        return new UploadedFile(__DIR__.'/../config/assets/'.$fileName, $fileName, 'image/jpg', null, true);
-    }
-
-    protected function getUploadedFiles(array $fileNames)
-    {
-        return array_map(function ($fileName) {
-            return new UploadedFile(__DIR__.'/../config/assets/'.$fileName, $fileName, 'image/jpg', null, true);
-        }, $fileNames);
     }
 }

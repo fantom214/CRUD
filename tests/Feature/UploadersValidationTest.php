@@ -9,6 +9,7 @@ use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 
 /**
  * @covers Backpack\CRUD\app\Library\Validation\Rules\BackpackCustomRule
@@ -17,7 +18,9 @@ use PHPUnit\Framework\Attributes\Group;
  */
 class UploadersValidationTest extends BaseDBCrudPanel
 {
-    private string $testBaseUrl;
+    use HasUploadedFiles;
+
+    protected string $testBaseUrl;
 
     protected function defineRoutes($router)
     {
@@ -29,6 +32,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         parent::setUp();
 
         $this->testBaseUrl = config('backpack.base.route_prefix').'/uploader-validation';
+
         Storage::fake('uploaders');
         $this->actingAs(User::find(1));
     }
@@ -42,8 +46,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => UploadedFile::fake()->create('avatar.pdf'),
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf'), UploadedFile::fake()->create('avatar2.pdf')],
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
 
         $response->assertStatus(302);
@@ -57,13 +61,13 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertEquals(3, count($files));
 
         $this->assertDatabaseHas('uploaders', [
-            'upload' => 'avatar.pdf',
-            'upload_multiple' => json_encode(['avatar1.pdf',  'avatar2.pdf']),
+            'upload' => 'avatar1.jpg',
+            'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
 
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar2.pdf'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar2.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar3.jpg'));
     }
 
     public function test_it_display_the_edit_page_without_files()
@@ -92,9 +96,9 @@ class UploadersValidationTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload' => UploadedFile::fake()->create('avatar4.pdf'),
-            'upload_multiple' => [UploadedFile::fake()->create('avatar5.pdf'), UploadedFile::fake()->create('avatar6.pdf')],
-            'clear_upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
+            'upload' => $this->getUploadedFile('avatar4.jpg'),
+            'upload_multiple' =>  $this->getUploadedFiles(['avatar5.jpg',  'avatar6.jpg']),
+            'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
 
@@ -105,17 +109,17 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload' => 'avatar4.pdf',
-            'upload_multiple' => json_encode(['avatar5.pdf',  'avatar6.pdf']),
+            'upload' => 'avatar4.jpg',
+            'upload_multiple' => json_encode(['avatar5.jpg',  'avatar6.jpg']),
         ]);
 
         $files = Storage::disk('uploaders')->allFiles();
 
         $this->assertEquals(3, count($files));
 
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar4.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar5.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar6.pdf'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar4.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar5.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar6.jpg'));
     }
 
     public function test_it_can_delete_uploaded_files()
@@ -138,7 +142,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
+            'upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
 
@@ -149,17 +153,17 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload' => 'avatar1.pdf',
-            'upload_multiple' => json_encode(['avatar2.pdf',  'avatar3.pdf']),
+            'upload' => 'avatar1.jpg',
+            'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
 
         $files = Storage::disk('uploaders')->allFiles();
 
         $this->assertEquals(3, count($files));
 
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar2.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar3.pdf'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar2.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar3.jpg'));
     }
 
     public function test_upload_multiple_can_delete_uploaded_files_and_add_at_the_same_time()
@@ -167,8 +171,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload_multiple' => [UploadedFile::fake()->create('avatar4.pdf'), UploadedFile::fake()->create('avatar5.pdf')],
-            'clear_upload_multiple' => ['avatar2.pdf'],
+            'upload_multiple' => $this->getUploadedFiles(['avatar4.jpg',  'avatar5.jpg']),
+            'clear_upload_multiple' => ['avatar2.jpg'],
             'id' => 1,
         ]);
 
@@ -179,25 +183,25 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload' => 'avatar1.pdf',
-            'upload_multiple' => json_encode(['avatar3.pdf', 'avatar4.pdf',  'avatar5.pdf']),
+            'upload' => 'avatar1.jpg',
+            'upload_multiple' => json_encode(['avatar3.jpg', 'avatar4.jpg',  'avatar5.jpg']),
         ]);
 
         $files = Storage::disk('uploaders')->allFiles();
 
         $this->assertEquals(4, count($files));
 
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar3.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar4.pdf'));
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar5.pdf'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar3.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar4.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar5.jpg'));
     }
 
     public function test_it_validates_files_on_a_single_upload()
     {
         $response = $this->post($this->testBaseUrl, [
             'upload' => 'not-a-file',
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf'), UploadedFile::fake()->create('avatar2.pdf')],
+            'upload_multiple' => $this->getUploadedFiles(['avatar1.jpg', 'avatar2.jpg']),
         ]);
 
         $response->assertStatus(302);
@@ -209,8 +213,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_files_on_multiple_uploader()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => UploadedFile::fake()->create('avatar.pdf'),
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf'), 'not-a-file'],
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+            'upload_multiple' => array_merge($this->getUploadedFiles(['avatar1.jpg']), ['not-a-file']),
         ]);
 
         $response->assertStatus(302);
@@ -222,8 +226,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_mime_types_on_single_and_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => UploadedFile::fake()->create('avatar2.jpg'),
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.jpg'), UploadedFile::fake()->create('avatar3.jpg')],
+            'upload' => $this->getUploadedFile('avatar1.pdf', 'application/pdf'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar1.pdf', 'avatar1.pdf'], 'application/pdf'),
         ]);
 
         $response->assertStatus(302);
@@ -232,8 +236,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $response->assertSessionHasErrors('upload');
 
         // assert the error content
-        $this->assertEquals('The upload multiple field must be a file of type: pdf.', session('errors')->get('upload_multiple')[0]);
-        $this->assertEquals('The upload field must be a file of type: pdf.', session('errors')->get('upload')[0]);
+        $this->assertEquals('The upload multiple field must be a file of type: jpg.', session('errors')->get('upload_multiple')[0]);
+        $this->assertEquals('The upload field must be a file of type: jpg.', session('errors')->get('upload')[0]);
 
         $this->assertDatabaseCount('uploaders', 0);
     }
@@ -241,8 +245,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_file_size_on_single_and_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => UploadedFile::fake()->create('avatar.pdf', 2000),
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf', 2000), UploadedFile::fake()->create('avatar2.pdf', 2000)],
+            'upload' => $this->getUploadedFile('avatar1_big.jpg'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar2_big.jpg', 'avatar3_big.jpg'])
         ]);
 
         $response->assertStatus(302);
@@ -251,8 +255,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $response->assertSessionHasErrors('upload');
 
         // assert the error content
-        $this->assertEquals('The upload multiple field must not be greater than 1024 kilobytes.', session('errors')->get('upload_multiple')[0]);
-        $this->assertEquals('The upload field must not be greater than 1024 kilobytes.', session('errors')->get('upload')[0]);
+        $this->assertEquals('The upload multiple field must not be greater than 100 kilobytes.', session('errors')->get('upload_multiple')[0]);
+        $this->assertEquals('The upload field must not be greater than 100 kilobytes.', session('errors')->get('upload')[0]);
 
         $this->assertDatabaseCount('uploaders', 0);
     }
@@ -260,8 +264,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
     public function test_it_validates_min_files_on_multi_uploads()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => UploadedFile::fake()->create('avatar.pdf'),
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf')],
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg']),
         ]);
 
         $response->assertStatus(302);
@@ -308,7 +312,6 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 0);
     }
 
-    #[Group('fail')]
     public function test_it_validates_required_files_on_single_and_multi_uploads_when_updating()
     {
         self::initUploader();
@@ -338,7 +341,7 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $response = $this->put($this->testBaseUrl.'/1', [
             'upload' => null,
             'upload_multiple' => null,
-            'clear_upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
+            'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
 
@@ -360,8 +363,8 @@ class UploadersValidationTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload_multiple' => [UploadedFile::fake()->create('avatar1.pdf')],
-            'clear_upload_multiple' => ['avatar2.pdf',  'avatar3.pdf'],
+            'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg']),
+            'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
 
@@ -389,13 +392,13 @@ class UploadersValidationTest extends BaseDBCrudPanel
 
     protected static function initUploaderWithFiles()
     {
-        UploadedFile::fake()->create('avatar1.pdf')->storeAs('', 'avatar1.pdf', ['disk' => 'uploaders']);
-        UploadedFile::fake()->create('avatar2.pdf')->storeAs('', 'avatar2.pdf', ['disk' => 'uploaders']);
-        UploadedFile::fake()->create('avatar3.pdf')->storeAs('', 'avatar3.pdf', ['disk' => 'uploaders']);
+        UploadedFile::fake()->create('avatar1.jpg')->storeAs('', 'avatar1.jpg', ['disk' => 'uploaders']);
+        UploadedFile::fake()->create('avatar2.jpg')->storeAs('', 'avatar2.jpg', ['disk' => 'uploaders']);
+        UploadedFile::fake()->create('avatar3.jpg')->storeAs('', 'avatar3.jpg', ['disk' => 'uploaders']);
 
         Uploader::create([
-            'upload' => 'avatar1.pdf',
-            'upload_multiple' => json_encode(['avatar2.pdf',  'avatar3.pdf']),
+            'upload' => 'avatar1.jpg',
+            'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
     }
 

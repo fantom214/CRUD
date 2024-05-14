@@ -8,6 +8,8 @@ use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Group;
+use Backpack\CRUD\Tests\config\HasUploadedFiles;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader
@@ -18,6 +20,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class UploadersTest extends BaseDBCrudPanel
 {
+    use HasUploadedFiles;
+
     protected string $testBaseUrl;
 
     protected function defineRoutes($router)
@@ -42,8 +46,8 @@ class UploadersTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => UploadedFile::fake()->image('avatar.jpg'),
-            'upload_multiple' => [UploadedFile::fake()->image('avatar1.jpg'), UploadedFile::fake()->image('avatar2.jpg')],
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
 
         $response->assertStatus(302);
@@ -57,13 +61,13 @@ class UploadersTest extends BaseDBCrudPanel
         $this->assertEquals(3, count($files));
 
         $this->assertDatabaseHas('uploaders', [
-            'upload' => 'avatar.jpg',
-            'upload_multiple' => json_encode(['avatar1.jpg',  'avatar2.jpg']),
+            'upload' => 'avatar1.jpg',
+            'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
 
-        $this->assertTrue(Storage::disk('uploaders')->exists('avatar.jpg'));
         $this->assertTrue(Storage::disk('uploaders')->exists('avatar1.jpg'));
         $this->assertTrue(Storage::disk('uploaders')->exists('avatar2.jpg'));
+        $this->assertTrue(Storage::disk('uploaders')->exists('avatar3.jpg'));
     }
 
     public function test_it_display_the_edit_page_without_files()
@@ -91,8 +95,8 @@ class UploadersTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload' => UploadedFile::fake()->image('avatar4.jpg'),
-            'upload_multiple' => [UploadedFile::fake()->image('avatar5.jpg'), UploadedFile::fake()->image('avatar6.jpg')],
+            'upload' => $this->getUploadedFile('avatar4.jpg'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar5.jpg', 'avatar6.jpg']),
             'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
@@ -193,7 +197,7 @@ class UploadersTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload_multiple' => [UploadedFile::fake()->image('avatar4.jpg'), UploadedFile::fake()->image('avatar5.jpg')],
+            'upload_multiple' => $this->getUploadedFiles(['avatar4.jpg', 'avatar5.jpg']),
             'clear_upload_multiple' => ['avatar2.jpg'],
             'id' => 1,
         ]);

@@ -283,7 +283,7 @@ abstract class Uploader implements UploaderInterface
 
         if ($this->handleMultipleFiles) {
             // ensure we have an array of values when field is not casted in model.
-            if (! isset($entry->getCasts()[$this->name]) && is_string($values)) {
+            if (is_string($values)) {
                 $values = json_decode($values, true);
             }
             foreach ($values ?? [] as $value) {

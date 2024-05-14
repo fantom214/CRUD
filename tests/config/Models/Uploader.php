@@ -16,7 +16,7 @@ class Uploader extends Model
     protected $fillable = ['upload', 'upload_multiple', 'extras'];
 
     protected $casts = [
-        //'upload_multiple' => 'json',
+        'upload_multiple' => 'json',
     ];
 
     public $timestamps = false;

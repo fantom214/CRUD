@@ -27,8 +27,8 @@ class UploaderRequest extends FormRequest
     public function rules()
     {
         return [
-            'upload' => ValidUpload::field('required')->file(['mimes:pdf', 'max:1024']),
-            'upload_multiple' => ValidUploadMultiple::field(['required', 'min:2'])->file(['mimes:pdf', 'max:1024']),
+            'upload' => ValidUpload::field('required')->file(['mimes:jpg', 'max:100']),
+            'upload_multiple' => ValidUploadMultiple::field(['required', 'min:2'])->file(['mimes:jpg', 'max:100']),
         ];
     }
 }
