@@ -45,9 +45,9 @@ class UploadersTest extends BaseDBCrudPanel
             'upload' => UploadedFile::fake()->image('avatar.jpg'),
             'upload_multiple' => [UploadedFile::fake()->image('avatar1.jpg'), UploadedFile::fake()->image('avatar2.jpg')],
         ]);
-        
+
         $response->assertStatus(302);
-        
+
         $response->assertRedirect($this->testBaseUrl);
 
         $this->assertDatabaseCount('uploaders', 1);

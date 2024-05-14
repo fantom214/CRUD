@@ -8,7 +8,6 @@ use Backpack\CRUD\Tests\config\Models\FakeUploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader
@@ -44,9 +43,9 @@ class FakeUploadersTest extends BaseDBCrudPanel
             'upload' => $this->getUploadedFile('avatar1.jpg'),
             'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
-        
+
         $response->assertStatus(302);
-        
+
         $response->assertRedirect($this->testBaseUrl);
 
         $this->assertDatabaseCount('uploaders', 1);
@@ -84,7 +83,7 @@ class FakeUploadersTest extends BaseDBCrudPanel
     public function test_it_can_update_uploaded_files()
     {
         self::initUploaderWithFiles();
-       
+
         $response = $this->put($this->testBaseUrl.'/1', [
             '_method' => 'PUT',
             'upload' => $this->getUploadedFile('avatar4.jpg'),
@@ -92,7 +91,7 @@ class FakeUploadersTest extends BaseDBCrudPanel
             'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
             'id' => 1,
         ]);
-        
+
         $response->assertStatus(302);
 
         $response->assertRedirect($this->testBaseUrl);
@@ -104,7 +103,7 @@ class FakeUploadersTest extends BaseDBCrudPanel
         ]);
 
         $files = Storage::disk('uploaders')->allFiles();
-    
+
         $this->assertEquals(3, count($files));
 
         $this->assertTrue(Storage::disk('uploaders')->exists('avatar4.jpg'));
@@ -218,14 +217,14 @@ class FakeUploadersTest extends BaseDBCrudPanel
         UploadedFile::fake()->image('avatar3.jpg')->storeAs('', 'avatar3.jpg', ['disk' => 'uploaders']);
 
         FakeUploader::create([
-            'extras' => ['upload' => 'avatar1.jpg','upload_multiple' => ['avatar2.jpg',  'avatar3.jpg']],
+            'extras' => ['upload' => 'avatar1.jpg', 'upload_multiple' => ['avatar2.jpg',  'avatar3.jpg']],
         ]);
     }
 
     protected static function initUploader()
     {
         FakeUploader::create([
-            'extras' => ['upload' => null,'upload_multiple' => null],
+            'extras' => ['upload' => null, 'upload_multiple' => null],
         ]);
     }
 

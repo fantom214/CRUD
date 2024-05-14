@@ -243,7 +243,7 @@ abstract class Uploader implements UploaderInterface
 
             $values = is_string($values) ? json_decode($values, true) : $values;
             $attributeValue = $values[$this->getAttributeName()] ?? null;
-            $attributeValue = is_array($attributeValue) ? array_map(fn($value) => $this->getValueWithoutPath($value), $attributeValue) : $this->getValueWithoutPath($attributeValue);
+            $attributeValue = is_array($attributeValue) ? array_map(fn ($value) => $this->getValueWithoutPath($value), $attributeValue) : $this->getValueWithoutPath($attributeValue);
             $values[$this->getAttributeName()] = $attributeValue;
             $entry->{$this->attachedToFakeField} = isset($entry->getCasts()[$this->attachedToFakeField]) ? $values : json_encode($values);
 

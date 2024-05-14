@@ -25,7 +25,7 @@ class CrudPanelSaveActionsTest extends \Backpack\CRUD\Tests\config\CrudPanel\Bas
         $this->crudPanel->setOperation('create');
 
         $this->singleSaveAction = [
-            'name'        => 'save_action_one',
+            'name' => 'save_action_one',
             'button_text' => 'custom',
             'redirect' => function ($crud, $request, $itemId) {
                 return 'https://backpackforlaravel.com';
@@ -40,7 +40,7 @@ class CrudPanelSaveActionsTest extends \Backpack\CRUD\Tests\config\CrudPanel\Bas
 
         $this->multipleSaveActions = [
             [
-                'name'     => 'save_action_one',
+                'name' => 'save_action_one',
                 'redirect' => function ($crud, $request, $itemId) {
                     return $crud->route;
                 },
@@ -49,7 +49,7 @@ class CrudPanelSaveActionsTest extends \Backpack\CRUD\Tests\config\CrudPanel\Bas
                 },
             ],
             [
-                'name'     => 'save_action_two',
+                'name' => 'save_action_two',
                 'redirect' => function ($crud, $request, $itemId) {
                     return $crud->route;
                 },
@@ -186,7 +186,7 @@ class CrudPanelSaveActionsTest extends \Backpack\CRUD\Tests\config\CrudPanel\Bas
             'options' => [
                 'save_and_back' => 'Save and back',
                 'save_and_edit' => 'Save and edit this item',
-                'save_and_new'  => 'Save and new item',
+                'save_and_new' => 'Save and new item',
             ],
         ];
         $this->assertEquals($expected, $saveActions);
