@@ -10,6 +10,11 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
 
+/**
+ * @covers Backpack\CRUD\app\Library\Validation\Rules\BackpackCustomRule
+ * @covers Backpack\CRUD\app\Library\Validation\Rules\ValidUpload
+ * @covers Backpack\CRUD\app\Library\Validation\Rules\ValidUploadMultiple
+ */
 class UploadersValidationTest extends BaseDBCrudPanel
 {
     private string $testBaseUrl;
