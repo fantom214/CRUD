@@ -35,7 +35,6 @@ class FakeUploadersTest extends BaseDBCrudPanel
         $this->testBaseUrl = config('backpack.base.route_prefix').'/fake-uploader';
     }
 
-    #[Group('fail')]
     public function test_it_can_access_the_uploaders_create_page()
     {
         $response = $this->get($this->testBaseUrl.'/create');

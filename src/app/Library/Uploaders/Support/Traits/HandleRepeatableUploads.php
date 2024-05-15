@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * @codeCoverageIgnore
+ */
 trait HandleRepeatableUploads
 {
     public bool $handleRepeatableFiles = false;

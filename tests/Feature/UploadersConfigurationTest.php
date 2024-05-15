@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 class UploadersConfigurationTest extends BaseDBCrudPanel
 {
     use HasUploadedFiles;
+
     protected string $testBaseUrl;
 
     protected function defineRoutes($router)
@@ -44,7 +45,7 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files_using_our_file_name_generator()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => $this->getUploadedFile('avatar1.jpg'),
+            'upload'          => $this->getUploadedFile('avatar1.jpg'),
             'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
 
@@ -68,5 +69,31 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
         $this->assertMatchesRegularExpression('/avatar\d{1}-[a-zA-Z0-9]{4}\.jpg/', $entry->upload);
         $this->assertMatchesRegularExpression('/avatar\d{1}-[a-zA-Z0-9]{4}\.jpg/', $entry->upload_multiple[0]);
         $this->assertMatchesRegularExpression('/avatar\d{1}-[a-zA-Z0-9]{4}\.jpg/', $entry->upload_multiple[1]);
+    }
+
+    public function test_it_validates_the_file_namer_invalid_string()
+    {
+        $this->expectException(\Exception::class);        
+
+        $response = $this->get($this->testBaseUrl.'/invalid-file-namer', [
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+        ]);
+
+        $response->assertStatus(500);
+
+        throw $response->exception;
+    }
+
+    public function test_it_validates_the_file_namer_invalid_class()
+    {
+        $this->expectException(\Exception::class);
+
+        $response = $this->get($this->testBaseUrl.'/invalid-file-namer-class', [
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+        ]);
+
+        $response->assertStatus(500);
+
+        throw $response->exception;
     }
 }

@@ -357,7 +357,6 @@ class UploadersValidationTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
     }
 
-    #[Group('fail')]
     public function test_it_validates_min_files_on_multi_uploads_when_updating()
     {
         self::initUploaderWithFiles();
