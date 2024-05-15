@@ -9,7 +9,6 @@ use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use PHPUnit\Framework\Attributes\Group;
 
 /**
  * @covers Backpack\CRUD\app\Library\Validation\Rules\BackpackCustomRule

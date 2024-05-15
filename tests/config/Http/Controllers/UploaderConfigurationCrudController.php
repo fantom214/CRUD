@@ -47,12 +47,14 @@ class UploaderConfigurationCrudController extends CrudController
     protected function invalidFileNamer()
     {
         CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'fileNamer' => 'invalid']);
+
         return $this->store();
     }
 
     protected function invalidFileNamerClass()
     {
         CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'fileNamer' => \Backpack\CRUD\Tests\config\Models\User::class]);
+
         return $this->store();
     }
 }
