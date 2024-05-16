@@ -52,7 +52,7 @@ final class UploadersRepository
      */
     public function hasUploadFor(string $objectType, string $group): bool
     {
-        return array_key_exists($objectType, $this->uploaderClasses[$group]);
+        return array_key_exists($objectType, $this->uploaderClasses[$group] ?? []);
     }
 
     /**
@@ -60,6 +60,10 @@ final class UploadersRepository
      */
     public function getUploadFor(string $objectType, string $group): string
     {
+        if (! $this->hasUploadFor($objectType, $group)) {
+            throw new \Exception('There is no uploader defined for the given field type.');
+        }
+
         return $this->uploaderClasses[$group][$objectType];
     }
 
@@ -68,6 +72,12 @@ final class UploadersRepository
      */
     public function addUploaderClasses(array $uploaders, string $group): void
     {
+        // ensure all uploaders implement the UploaderInterface
+        foreach ($uploaders as $uploader) {
+            if (! is_a($uploader, UploaderInterface::class, true)) {
+                throw new \Exception('The uploader class must implement the UploaderInterface.');
+            }
+        }
         $this->uploaderClasses[$group] = array_merge($this->getGroupUploadersClasses($group), $uploaders);
     }
 
