@@ -3,10 +3,10 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
-use Backpack\CRUD\Tests\config\Uploads\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderValidationCrudController;
 use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
+use Backpack\CRUD\Tests\config\Uploads\HasUploadedFiles;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 

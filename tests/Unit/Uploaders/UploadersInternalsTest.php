@@ -7,7 +7,6 @@ use Backpack\CRUD\app\Library\Uploaders\SingleBase64Image;
 use Backpack\CRUD\app\Library\Uploaders\SingleFile;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
 use Backpack\CRUD\Tests\config\CrudPanel\BaseCrudPanel;
-use PHPUnit\Framework\Attributes\Group;
 
 class UploadersInternalsTest extends BaseCrudPanel
 {
@@ -66,7 +65,7 @@ class UploadersInternalsTest extends BaseCrudPanel
         $this->assertTrue(is_a($this->uploaderRepository->getUploadFor('image', 'withFiles'), SingleBase64Image::class, true));
 
         $this->uploaderRepository->addUploaderClasses([
-            'image'    => SingleFile::class,
+            'image' => SingleFile::class,
             'dropzone' => SingleFile::class,
         ], 'withFiles');
 
@@ -91,8 +90,8 @@ class UploadersInternalsTest extends BaseCrudPanel
     {
         CRUD::field('gallery')->subfields([
             [
-                'name'      => 'image',
-                'type'      => 'image',
+                'name' => 'image',
+                'type' => 'image',
                 'withFiles' => true,
             ],
         ]);
@@ -125,7 +124,7 @@ class UploadersInternalsTest extends BaseCrudPanel
 
         $this->assertEquals('test', CRUD::getFields()['upload']['disk']);
     }
-    
+
     public function test_it_can_set_temporary_options()
     {
         CRUD::field('upload')->type('upload')->withFiles(['temporaryUrl' => true]);

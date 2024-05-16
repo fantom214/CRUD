@@ -157,7 +157,7 @@ final class RegisterUploadEvents
     {
         $hasCustomUploader = isset($uploaderConfiguration['uploader']);
 
-        if($hasCustomUploader && ! is_a($uploaderConfiguration['uploader'], UploaderInterface::class, true)) {
+        if ($hasCustomUploader && ! is_a($uploaderConfiguration['uploader'], UploaderInterface::class, true)) {
             throw new Exception('Invalid uploader class provided for '.$this->crudObjectType.' type: '.$crudObject['type']);
         }
 
