@@ -24,6 +24,9 @@ class UploaderConfigurationCrudController extends CrudController
     {
         Route::get(config('backpack.base.route_prefix').'/uploader-configuration/invalid-file-namer', [self::class, 'invalidFileNamer'])->name('uploader-configuration.file-namer');
         Route::get(config('backpack.base.route_prefix').'/uploader-configuration/invalid-file-namer-class', [self::class, 'invalidFileNamerClass'])->name('uploader-configuration.file-namer-class');
+        Route::post(config('backpack.base.route_prefix').'/uploader-configuration/custom-uploader', [self::class, 'customUploader'])->name('uploader-configuration.custom-uploader');
+        Route::post(config('backpack.base.route_prefix').'/uploader-configuration/custom-invalid-uploader', [self::class, 'customInvalidUploader'])->name('uploader-configuration.custom-invalid-uploader');
+        Route::get(config('backpack.base.route_prefix').'/uploader-configuration/set-temporary-options', [self::class, 'temporaryOptions'])->name('uploader-configuration.temporary-options');
     }
 
     protected function setupCreateOperation()
@@ -54,6 +57,27 @@ class UploaderConfigurationCrudController extends CrudController
     protected function invalidFileNamerClass()
     {
         CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'fileNamer' => \Backpack\CRUD\Tests\config\Models\User::class]);
+
+        return $this->store();
+    }
+
+    protected function customUploader()
+    {
+        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'uploader' => \Backpack\CRUD\Tests\config\Uploads\CustomUploader::class]);
+
+        return $this->store();
+    }
+
+    protected function customInvalidUploader()
+    {
+        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'uploader' => 'InvalidUploader']);
+
+        return $this->store();
+    }
+
+    protected function temporaryOptions()
+    {
+        CRUD::field('upload')->type('upload')->withFiles(['disk' => 'uploaders', 'temporary' => true]);
 
         return $this->store();
     }

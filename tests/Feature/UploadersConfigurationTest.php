@@ -3,11 +3,12 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
-use Backpack\CRUD\Tests\config\HasUploadedFiles;
+use Backpack\CRUD\Tests\config\Uploads\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\UploaderConfigurationCrudController;
 use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader
@@ -75,9 +76,7 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
     {
         $this->expectException(\Exception::class);
 
-        $response = $this->get($this->testBaseUrl.'/invalid-file-namer', [
-            'upload' => $this->getUploadedFile('avatar1.jpg'),
-        ]);
+        $response = $this->get($this->testBaseUrl.'/invalid-file-namer');
 
         $response->assertStatus(500);
 
@@ -88,7 +87,37 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
     {
         $this->expectException(\Exception::class);
 
-        $response = $this->get($this->testBaseUrl.'/invalid-file-namer-class', [
+        $response = $this->get($this->testBaseUrl.'/invalid-file-namer-class');
+
+        $response->assertStatus(500);
+
+        throw $response->exception;
+    }
+
+    #[Group('fail')]
+    public function test_it_can_use_a_custom_uploader()
+    {
+        $response = $this->post($this->testBaseUrl.'/custom-uploader', [
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
+        ]);
+
+        $response->assertStatus(302);
+
+        $response->assertRedirect($this->testBaseUrl);
+
+        $this->assertDatabaseCount('uploaders', 1);
+
+        $files = Storage::disk('uploaders')->allFiles();
+
+        $this->assertEquals(1, count($files));
+    }
+
+    #[Group('fail')]
+    public function test_it_validates_the_custom_uploader_class()
+    {
+        $this->expectException(\Exception::class);
+
+        $response = $this->post($this->testBaseUrl.'/custom-invalid-uploader', [
             'upload' => $this->getUploadedFile('avatar1.jpg'),
         ]);
 

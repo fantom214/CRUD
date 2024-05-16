@@ -1,6 +1,6 @@
 <?php
 
-namespace Backpack\CRUD\Tests\config;
+namespace Backpack\CRUD\Tests\config\Uploads;
 
 use Illuminate\Http\UploadedFile;
 

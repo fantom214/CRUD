@@ -155,9 +155,13 @@ final class RegisterUploadEvents
      */
     private function getUploader(array $crudObject, array $uploaderConfiguration): UploaderInterface
     {
-        $customUploader = isset($uploaderConfiguration['uploader']) && class_exists($uploaderConfiguration['uploader']);
+        $hasCustomUploader = isset($uploaderConfiguration['uploader']);
 
-        if ($customUploader) {
+        if($hasCustomUploader && ! is_a($uploaderConfiguration['uploader'], UploaderInterface::class, true)) {
+            throw new Exception('Invalid uploader class provided for '.$this->crudObjectType.' type: '.$crudObject['type']);
+        }
+
+        if ($hasCustomUploader) {
             return $uploaderConfiguration['uploader']::for($crudObject, $uploaderConfiguration);
         }
 

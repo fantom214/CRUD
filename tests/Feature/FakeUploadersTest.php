@@ -3,7 +3,7 @@
 namespace Backpack\CRUD\Tests\Feature;
 
 use Backpack\CRUD\Tests\config\CrudPanel\BaseDBCrudPanel;
-use Backpack\CRUD\Tests\config\HasUploadedFiles;
+use Backpack\CRUD\Tests\config\Uploads\HasUploadedFiles;
 use Backpack\CRUD\Tests\config\Http\Controllers\FakeUploaderCrudController;
 use Backpack\CRUD\Tests\config\Models\FakeUploader;
 use Backpack\CRUD\Tests\config\Models\User;
