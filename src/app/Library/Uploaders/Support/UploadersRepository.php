@@ -170,7 +170,7 @@ final class UploadersRepository
             return $uploader;
         }
 
-        if (empty($crudObject = CRUD::fields()[$requestInputName])) {
+        if (empty($crudObject = CRUD::fields()[$requestInputName] ?? [])) {
             abort(500, 'Could not find the field in the CRUD fields.');
         }
 
