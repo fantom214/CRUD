@@ -191,7 +191,7 @@ trait HandleRepeatableUploads
             return $entry;
         }
 
-        $values = $entry->{$this->getAttributeName()};
+        $values = $entry->{$this->getRepeatableContainerName()};
         $values = is_string($values) ? json_decode($values, true) : $values;
         $values = array_map(function ($item) use ($repeatableUploaders) {
             foreach ($repeatableUploaders as $upload) {

@@ -54,8 +54,11 @@ class SingleFile extends Uploader
         }
 
         foreach ($previousRepeatableValues as $row => $file) {
-            if ($file && ! isset($orderedFiles[$row])) {
-                $orderedFiles[$row] = null;
+            if ($file) {
+                if(! isset($orderedFiles[$row])) {
+                    $orderedFiles[$row] = null;
+                }
+                
                 Storage::disk($this->getDisk())->delete($file);
             }
         }
