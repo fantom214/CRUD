@@ -45,7 +45,7 @@ class UploadersTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => $this->getUploadedFile('avatar1.jpg'),
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
             'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
 
@@ -60,7 +60,7 @@ class UploadersTest extends BaseDBCrudPanel
         $this->assertEquals(3, count($files));
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar1.jpg',
+            'upload' => 'avatar1.jpg',
             'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
 
@@ -94,10 +94,10 @@ class UploadersTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload'                => $this->getUploadedFile('avatar4.jpg'),
-            'upload_multiple'       => $this->getUploadedFiles(['avatar5.jpg', 'avatar6.jpg']),
+            'upload' => $this->getUploadedFile('avatar4.jpg'),
+            'upload_multiple' => $this->getUploadedFiles(['avatar5.jpg', 'avatar6.jpg']),
             'clear_upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
-            'id'                    => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -107,7 +107,7 @@ class UploadersTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar4.jpg',
+            'upload' => 'avatar4.jpg',
             'upload_multiple' => json_encode(['avatar5.jpg',  'avatar6.jpg']),
         ]);
 
@@ -126,7 +126,7 @@ class UploadersTest extends BaseDBCrudPanel
 
         $response = $this->put($this->testBaseUrl.'/1', [
             'upload' => null,
-            'id'     => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -136,7 +136,7 @@ class UploadersTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => null,
+            'upload' => null,
             'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
 
@@ -168,7 +168,7 @@ class UploadersTest extends BaseDBCrudPanel
 
         $response = $this->put($this->testBaseUrl.'/1', [
             'upload_multiple' => ['avatar2.jpg',  'avatar3.jpg'],
-            'id'              => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -178,7 +178,7 @@ class UploadersTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar1.jpg',
+            'upload' => 'avatar1.jpg',
             'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
 
@@ -196,9 +196,9 @@ class UploadersTest extends BaseDBCrudPanel
         self::initUploaderWithFiles();
 
         $response = $this->put($this->testBaseUrl.'/1', [
-            'upload_multiple'       => $this->getUploadedFiles(['avatar4.jpg', 'avatar5.jpg']),
+            'upload_multiple' => $this->getUploadedFiles(['avatar4.jpg', 'avatar5.jpg']),
             'clear_upload_multiple' => ['avatar2.jpg'],
-            'id'                    => 1,
+            'id' => 1,
         ]);
 
         $response->assertStatus(302);
@@ -208,7 +208,7 @@ class UploadersTest extends BaseDBCrudPanel
         $this->assertDatabaseCount('uploaders', 1);
 
         $this->assertDatabaseHas('uploaders', [
-            'upload'          => 'avatar1.jpg',
+            'upload' => 'avatar1.jpg',
             'upload_multiple' => json_encode(['avatar3.jpg', 'avatar4.jpg',  'avatar5.jpg']),
         ]);
 
@@ -229,7 +229,7 @@ class UploadersTest extends BaseDBCrudPanel
         UploadedFile::fake()->image('avatar3.jpg')->storeAs('', 'avatar3.jpg', ['disk' => 'uploaders']);
 
         Uploader::create([
-            'upload'          => 'avatar1.jpg',
+            'upload' => 'avatar1.jpg',
             'upload_multiple' => json_encode(['avatar2.jpg',  'avatar3.jpg']),
         ]);
     }
@@ -237,7 +237,7 @@ class UploadersTest extends BaseDBCrudPanel
     protected static function initUploader()
     {
         Uploader::create([
-            'upload'          => null,
+            'upload' => null,
             'upload_multiple' => null,
         ]);
     }
