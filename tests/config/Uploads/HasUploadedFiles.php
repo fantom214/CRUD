@@ -17,4 +17,9 @@ trait HasUploadedFiles
             return new UploadedFile(__DIR__.'/assets/'.$fileName, $fileName, $mime, null, true);
         }, $fileNames);
     }
+
+    protected function getBase64Image()
+    {
+        return 'data:image/jpg;base64,'.base64_encode(file_get_contents(__DIR__.'/assets/avatar1.jpg'));
+    }
 }

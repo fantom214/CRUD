@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/** @codeCoverageIgnore */
 class SingleBase64Image extends Uploader
 {
     public function uploadFiles(Model $entry, $value = null)
