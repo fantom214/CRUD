@@ -14,6 +14,7 @@ return new class() extends Migration
         Schema::create('uploaders', function (Blueprint $table) {
             $table->increments('id');
             $table->string('upload')->nullable();
+            $table->string('image')->nullable();
             $table->json('upload_multiple')->nullable();
             $table->json('dropzone')->nullable();
             $table->json('easymde')->nullable();
