@@ -8,7 +8,6 @@ use Backpack\CRUD\Tests\config\Models\Uploader;
 use Backpack\CRUD\Tests\config\Models\User;
 use Backpack\CRUD\Tests\config\Uploads\HasUploadedFiles;
 use Illuminate\Support\Facades\Storage;
-use PHPUnit\Framework\Attributes\Group;
 
 /**
  * @covers Backpack\CRUD\app\Library\Uploaders\Uploader
@@ -46,7 +45,7 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files_using_our_file_name_generator()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload' => $this->getUploadedFile('avatar1.jpg'),
+            'upload'          => $this->getUploadedFile('avatar1.jpg'),
             'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
 
@@ -94,7 +93,6 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
         throw $response->exception;
     }
 
-    #[Group('fail')]
     public function test_it_can_use_a_custom_uploader()
     {
         $response = $this->post($this->testBaseUrl.'/custom-uploader', [
@@ -112,7 +110,6 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
         $this->assertEquals(1, count($files));
     }
 
-    #[Group('fail')]
     public function test_it_validates_the_custom_uploader_class()
     {
         $this->expectException(\Exception::class);
