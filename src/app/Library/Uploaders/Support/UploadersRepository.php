@@ -26,7 +26,7 @@ final class UploadersRepository
 
     public function __construct()
     {
-        $this->uploaderClasses = config('backpack.crud.uploaders');
+        $this->uploaderClasses = config('backpack.crud.uploaders', []);
     }
 
     /**
@@ -65,6 +65,14 @@ final class UploadersRepository
         }
 
         return $this->uploaderClasses[$group][$objectType];
+    }
+
+    /**
+     * return the registered groups names AKA macros. eg: withFiles, withMedia.
+     */
+    public function getUploadersGroupsNames(): array
+    {
+        return array_keys($this->uploaderClasses);
     }
 
     /**
@@ -194,7 +202,14 @@ final class UploadersRepository
      */
     private function getUploadCrudObjectMacroType(array $crudObject): string|null
     {
-        return isset($crudObject['withFiles']) ? 'withFiles' : (isset($crudObject['withMedia']) ? 'withMedia' : null);
+        $uploadersGroups = $this->getUploadersGroupsNames();
+
+        foreach($uploadersGroups as $uploaderMacro) {
+            if (isset($crudObject[$uploaderMacro])) {
+                return $uploaderMacro;
+            }
+        }
+        return null;
     }
 
     private function isValidUploadField($crudObject, $uploaderMacro)

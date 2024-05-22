@@ -132,4 +132,9 @@ class UploadersInternalsTest extends BaseCrudPanel
         $this->assertTrue(CRUD::getFields()['upload']['temporary']);
         $this->assertEquals(1, CRUD::getFields()['upload']['expiration']);
     }
+
+    public function test_it_can_get_the_uploaders_registered_macros()
+    {
+        $this->assertContains('withFiles', $this->uploaderRepository->getUploadersGroupsNames());
+    }
 }
