@@ -45,7 +45,7 @@ class UploadersConfigurationTest extends BaseDBCrudPanel
     public function test_it_can_store_uploaded_files_using_our_file_name_generator()
     {
         $response = $this->post($this->testBaseUrl, [
-            'upload'          => $this->getUploadedFile('avatar1.jpg'),
+            'upload' => $this->getUploadedFile('avatar1.jpg'),
             'upload_multiple' => $this->getUploadedFiles(['avatar2.jpg', 'avatar3.jpg']),
         ]);
 
