@@ -204,11 +204,12 @@ final class UploadersRepository
     {
         $uploadersGroups = $this->getUploadersGroupsNames();
 
-        foreach($uploadersGroups as $uploaderMacro) {
+        foreach ($uploadersGroups as $uploaderMacro) {
             if (isset($crudObject[$uploaderMacro])) {
                 return $uploaderMacro;
             }
         }
+
         return null;
     }
 
