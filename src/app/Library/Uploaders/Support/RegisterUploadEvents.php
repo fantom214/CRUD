@@ -140,10 +140,9 @@ final class RegisterUploadEvents
             $uploader->deleteUploadedFiles($entry);
         });
 
-        // if the uploader is a relationship and handles repeatable files, we will also register the deleting event on the 
+        // if the uploader is a relationship and handles repeatable files, we will also register the deleting event on the
         // parent model. that way we can control the deletion of the files when the parent model is deleted.
-        if($uploader->isRelationship() && $uploader->handleRepeatableFiles)
-        {
+        if ($uploader->isRelationship() && $uploader->handleRepeatableFiles) {
             app('crud')->model::deleting(function ($entry) use ($uploader) {
                 $uploader->deleteUploadedFiles($entry);
             });

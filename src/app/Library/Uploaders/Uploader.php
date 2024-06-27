@@ -102,7 +102,6 @@ abstract class Uploader implements UploaderInterface
 
     public function deleteUploadedFiles(Model $entry): void
     {
-        
         if (! in_array(SoftDeletes::class, class_uses_recursive($entry), true)) {
             $this->performFileDeletion($entry);
 
@@ -112,7 +111,6 @@ abstract class Uploader implements UploaderInterface
         if ($entry->isForceDeleting() === true) {
             $this->performFileDeletion($entry);
         }
-        
     }
 
     /*******************************
