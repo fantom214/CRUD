@@ -5,6 +5,7 @@ namespace Backpack\CRUD\app\Library\Uploaders\Support\Traits;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Backpack\CRUD\app\Library\Uploaders\Support\Interfaces\UploaderInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -348,14 +349,28 @@ trait HandleRepeatableUploads
 
     private function deleteRelationshipFiles(Model $entry): void
     {
+        if(!is_a($entry, Pivot::class, true)) {
+            $entry->loadMissing($this->getRepeatableContainerName());
+        }
+        
         foreach (app('UploadersRepository')->getRepeatableUploadersFor($this->getRepeatableContainerName()) as $uploader) {
-            $uploader->deleteRepeatableRelationFiles($entry);
+            if($uploader->shouldDeleteFiles()) {
+                $uploader->deleteRepeatableRelationFiles($entry);
+            }
         }
     }
 
     private function deleteRepeatableRelationFiles(Model $entry)
     {
         if (in_array($this->getRepeatableRelationType(), ['BelongsToMany', 'MorphToMany'])) {
+            if(!is_a($entry, Pivot::class, true)) {
+                $pivots = $entry->{$this->getRepeatableContainerName()};
+                foreach ($pivots as $pivot) {
+                    $this->deletePivotModelFiles($pivot);
+                }
+                return;
+            }
+
             $pivotAttributes = $entry->getAttributes();
             $connectedPivot = $entry->pivotParent->{$this->getRepeatableContainerName()}->where(function ($item) use ($pivotAttributes) {
                 $itemPivotAttributes = $item->pivot->only(array_keys($pivotAttributes));
@@ -367,37 +382,39 @@ trait HandleRepeatableUploads
                 return;
             }
 
-            $files = $connectedPivot->getOriginal()['pivot_'.$this->getAttributeName()];
-
-            if (! $files) {
-                return;
-            }
-
-            if ($this->handleMultipleFiles && is_string($files)) {
-                try {
-                    $files = json_decode($files, true);
-                } catch (\Exception) {
-                    Log::error('Could not parse files for deletion pivot entry with key: '.$entry->getKey().' and uploader: '.$this->getName());
-
-                    return;
-                }
-            }
-
-            if (is_array($files)) {
-                foreach ($files as $value) {
-                    $value = Str::start($value, $this->getPath());
-                    Storage::disk($this->getDisk())->delete($value);
-                }
-
-                return;
-            }
-
-            $value = Str::start($files, $this->getPath());
-            Storage::disk($this->getDisk())->delete($value);
-
-            return;
+            $this->deletePivotModelFiles($connectedPivot);
         }
 
         $this->deleteFiles($entry);
+    }
+
+    private function deletePivotModelFiles(Pivot|Model $entry)
+    {
+        $files = $entry->getOriginal()['pivot_'.$this->getAttributeName()];
+
+        if (! $files) {
+            return;
+        }
+
+        if ($this->handleMultipleFiles && is_string($files)) {
+            try {
+                $files = json_decode($files, true);
+            } catch (\Exception) {
+                Log::error('Could not parse files for deletion pivot entry with key: '.$entry->getKey().' and uploader: '.$this->getName());
+
+                return;
+            }
+        }
+
+        if (is_array($files)) {
+            foreach ($files as $value) {
+                $value = Str::start($value, $this->getPath());
+                Storage::disk($this->getDisk())->delete($value);
+            }
+            return;
+        }
+
+        $value = Str::start($files, $this->getPath());
+        Storage::disk($this->getDisk())->delete($value);
     }
 }
