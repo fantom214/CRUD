@@ -349,12 +349,12 @@ trait HandleRepeatableUploads
 
     private function deleteRelationshipFiles(Model $entry): void
     {
-        if(!is_a($entry, Pivot::class, true)) {
+        if (! is_a($entry, Pivot::class, true)) {
             $entry->loadMissing($this->getRepeatableContainerName());
         }
-        
+
         foreach (app('UploadersRepository')->getRepeatableUploadersFor($this->getRepeatableContainerName()) as $uploader) {
-            if($uploader->shouldDeleteFiles()) {
+            if ($uploader->shouldDeleteFiles()) {
                 $uploader->deleteRepeatableRelationFiles($entry);
             }
         }
@@ -363,11 +363,12 @@ trait HandleRepeatableUploads
     private function deleteRepeatableRelationFiles(Model $entry)
     {
         if (in_array($this->getRepeatableRelationType(), ['BelongsToMany', 'MorphToMany'])) {
-            if(!is_a($entry, Pivot::class, true)) {
+            if (! is_a($entry, Pivot::class, true)) {
                 $pivots = $entry->{$this->getRepeatableContainerName()};
                 foreach ($pivots as $pivot) {
                     $this->deletePivotModelFiles($pivot);
                 }
+
                 return;
             }
 
@@ -411,6 +412,7 @@ trait HandleRepeatableUploads
                 $value = Str::start($value, $this->getPath());
                 Storage::disk($this->getDisk())->delete($value);
             }
+
             return;
         }
 
