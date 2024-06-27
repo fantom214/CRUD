@@ -360,7 +360,7 @@ trait HandleRepeatableUploads
         }
     }
 
-    private function deleteRepeatableRelationFiles(Model $entry)
+    protected function deleteRepeatableRelationFiles(Model $entry)
     {
         if (in_array($this->getRepeatableRelationType(), ['BelongsToMany', 'MorphToMany'])) {
             if (! is_a($entry, Pivot::class, true)) {

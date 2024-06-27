@@ -102,17 +102,17 @@ abstract class Uploader implements UploaderInterface
 
     public function deleteUploadedFiles(Model $entry): void
     {
-        if ($this->deleteWhenEntryIsDeleted) {
-            if (! in_array(SoftDeletes::class, class_uses_recursive($entry), true)) {
-                $this->performFileDeletion($entry);
+        
+        if (! in_array(SoftDeletes::class, class_uses_recursive($entry), true)) {
+            $this->performFileDeletion($entry);
 
-                return;
-            }
-
-            if ($entry->isForceDeleting() === true) {
-                $this->performFileDeletion($entry);
-            }
+            return;
         }
+
+        if ($entry->isForceDeleting() === true) {
+            $this->performFileDeletion($entry);
+        }
+        
     }
 
     /*******************************
@@ -300,7 +300,7 @@ abstract class Uploader implements UploaderInterface
 
     private function performFileDeletion(Model $entry)
     {
-        if (! $this->handleRepeatableFiles) {
+        if (! $this->handleRepeatableFiles && $this->deleteWhenEntryIsDeleted) {
             $this->deleteFiles($entry);
 
             return;
