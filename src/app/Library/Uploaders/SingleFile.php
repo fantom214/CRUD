@@ -70,7 +70,7 @@ class SingleFile extends Uploader
     /**
      * Single file uploaders send no value when they are not dirty.
      */
-    protected function shouldKeepPreviousValueUnchanged(Model $entry, $entryValue): bool
+    public function shouldKeepPreviousValueUnchanged(Model $entry, $entryValue): bool
     {
         return is_string($entryValue);
     }

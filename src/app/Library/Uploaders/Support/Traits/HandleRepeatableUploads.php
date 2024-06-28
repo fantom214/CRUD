@@ -49,14 +49,17 @@ trait HandleRepeatableUploads
 
     protected function handleRepeatableFiles(Model $entry): Model
     {
-        if ($this->isRelationship) {
-            return $this->processRelationshipRepeatableUploaders($entry);
-        }
-
         $values = collect(CRUD::getRequest()->get($this->getRepeatableContainerName()));
         $files = collect(CRUD::getRequest()->file($this->getRepeatableContainerName()));
 
         $value = $this->mergeValuesRecursive($values, $files);
+
+        if ($this->isRelationship()) {
+            if($value->isEmpty()) {
+                return $entry;
+            }
+            return $this->processRelationshipRepeatableUploaders($entry);
+        }
 
         $processedEntryValues = $this->processRepeatableUploads($entry, $value);
 
@@ -146,11 +149,6 @@ trait HandleRepeatableUploads
     protected function shouldUploadFiles($entryValue): bool
     {
         return true;
-    }
-
-    protected function shouldKeepPreviousValueUnchanged(Model $entry, $entryValue): bool
-    {
-        return $entry->exists && ($entryValue === null || $entryValue === [null]);
     }
 
     protected function hasDeletedFiles($entryValue): bool
@@ -349,7 +347,10 @@ trait HandleRepeatableUploads
 
     private function deleteRelationshipFiles(Model $entry): void
     {
-        if (! is_a($entry, Pivot::class, true)) {
+        if (! is_a($entry, Pivot::class, true) &&
+            ! $entry->relationLoaded($this->getRepeatableContainerName()) && 
+            method_exists($entry, $this->getRepeatableContainerName())
+            ) { 
             $entry->loadMissing($this->getRepeatableContainerName());
         }
 
@@ -362,31 +363,47 @@ trait HandleRepeatableUploads
 
     protected function deleteRepeatableRelationFiles(Model $entry)
     {
-        if (in_array($this->getRepeatableRelationType(), ['BelongsToMany', 'MorphToMany'])) {
-            if (! is_a($entry, Pivot::class, true)) {
-                $pivots = $entry->{$this->getRepeatableContainerName()};
-                foreach ($pivots as $pivot) {
-                    $this->deletePivotModelFiles($pivot);
-                }
+        match ($this->getRepeatableRelationType()) {
+            'BelongsToMany', 'MorphToMany' => $this->deletePivotFiles($entry),
+            default => $this->deleteRelatedFiles($entry),
+        };
+    }
 
-                return;
+    private function deleteRelatedFiles(Model $entry)
+    {
+        if (get_class($entry) === get_class(app('crud')->model)) {
+            $relatedEntries = $entry->{$this->getRepeatableContainerName()} ?? [];
+        }
+        
+        $relatedEntries ??= [$entry];
+
+        foreach ($relatedEntries as $relatedEntry) {
+            $this->deleteFiles($relatedEntry);
+        }
+    }
+
+    private function deletePivotFiles(Pivot|Model $entry)
+    {
+        if (! is_a($entry, Pivot::class, true)) {
+            $pivots = $entry->{$this->getRepeatableContainerName()};
+            foreach ($pivots as $pivot) {
+                $this->deletePivotModelFiles($pivot);
             }
-
-            $pivotAttributes = $entry->getAttributes();
-            $connectedPivot = $entry->pivotParent->{$this->getRepeatableContainerName()}->where(function ($item) use ($pivotAttributes) {
-                $itemPivotAttributes = $item->pivot->only(array_keys($pivotAttributes));
-
-                return $itemPivotAttributes === $pivotAttributes;
-            })->first();
-
-            if (! $connectedPivot) {
-                return;
-            }
-
-            $this->deletePivotModelFiles($connectedPivot);
+            return;
         }
 
-        $this->deleteFiles($entry);
+        $pivotAttributes = $entry->getAttributes();
+        $connectedPivot = $entry->pivotParent->{$this->getRepeatableContainerName()}->where(function ($item) use ($pivotAttributes) {
+            $itemPivotAttributes = $item->pivot->only(array_keys($pivotAttributes));
+
+            return $itemPivotAttributes === $pivotAttributes;
+        })->first();
+
+        if (! $connectedPivot) {
+            return;
+        }
+
+        $this->deletePivotModelFiles($connectedPivot);
     }
 
     private function deletePivotModelFiles(Pivot|Model $entry)
