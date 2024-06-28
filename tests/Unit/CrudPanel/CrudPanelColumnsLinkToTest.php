@@ -124,7 +124,7 @@ class CrudPanelColumnsLinkToTest extends \Backpack\CRUD\Tests\config\CrudPanel\B
     {
         $this->crudPanel->setModel(User::class);
         $this->crudPanel->column([
-            'name'   => 'articles',
+            'name' => 'articles',
             'entity' => 'articles',
             'linkTo' => fn ($entry) => route('articles.show', ['id' => $entry->id, 'test' => 'testing']),
         ]);
@@ -138,7 +138,7 @@ class CrudPanelColumnsLinkToTest extends \Backpack\CRUD\Tests\config\CrudPanel\B
     {
         $this->crudPanel->setModel(User::class);
         $this->crudPanel->column([
-            'name'   => 'articles',
+            'name' => 'articles',
             'entity' => 'articles',
             'linkTo' => 'articles.show',
         ]);
@@ -152,12 +152,12 @@ class CrudPanelColumnsLinkToTest extends \Backpack\CRUD\Tests\config\CrudPanel\B
     {
         $this->crudPanel->setModel(User::class);
         $this->crudPanel->column([
-            'name'   => 'articles',
+            'name' => 'articles',
             'entity' => 'articles',
             'linkTo' => [
-                'route'      => 'articles.show',
+                'route' => 'articles.show',
                 'parameters' => [
-                    'test'  => 'testing',
+                    'test' => 'testing',
                     'test2' => fn ($entry) => $entry->content,
                 ],
             ],
