@@ -55,9 +55,10 @@ trait HandleRepeatableUploads
         $value = $this->mergeValuesRecursive($values, $files);
 
         if ($this->isRelationship()) {
-            if($value->isEmpty()) {
+            if ($value->isEmpty()) {
                 return $entry;
             }
+
             return $this->processRelationshipRepeatableUploaders($entry);
         }
 
@@ -348,9 +349,9 @@ trait HandleRepeatableUploads
     private function deleteRelationshipFiles(Model $entry): void
     {
         if (! is_a($entry, Pivot::class, true) &&
-            ! $entry->relationLoaded($this->getRepeatableContainerName()) && 
+            ! $entry->relationLoaded($this->getRepeatableContainerName()) &&
             method_exists($entry, $this->getRepeatableContainerName())
-            ) { 
+        ) {
             $entry->loadMissing($this->getRepeatableContainerName());
         }
 
@@ -374,7 +375,7 @@ trait HandleRepeatableUploads
         if (get_class($entry) === get_class(app('crud')->model)) {
             $relatedEntries = $entry->{$this->getRepeatableContainerName()} ?? [];
         }
-        
+
         $relatedEntries ??= [$entry];
 
         foreach ($relatedEntries as $relatedEntry) {
@@ -389,6 +390,7 @@ trait HandleRepeatableUploads
             foreach ($pivots as $pivot) {
                 $this->deletePivotModelFiles($pivot);
             }
+
             return;
         }
 
