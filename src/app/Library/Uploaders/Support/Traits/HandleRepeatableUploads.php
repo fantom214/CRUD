@@ -375,9 +375,9 @@ trait HandleRepeatableUploads
         if (get_class($entry) === get_class(app('crud')->model)) {
             $relatedEntries = $entry->{$this->getRepeatableContainerName()} ?? [];
         }
-        
-        if(! is_a($relatedEntries ?? '', Collection::class, true)) {
-            $relatedEntries = ! empty($relatedEntries) ? [$relatedEntries] : [$entry]; 
+
+        if (! is_a($relatedEntries ?? '', Collection::class, true)) {
+            $relatedEntries = ! empty($relatedEntries) ? [$relatedEntries] : [$entry];
         }
 
         foreach ($relatedEntries as $relatedEntry) {
