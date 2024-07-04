@@ -21,7 +21,7 @@ abstract class Uploader implements UploaderInterface
 
     private string $path = '';
 
-    private bool $handleMultipleFiles = false;
+    public bool $handleMultipleFiles = false;
 
     private bool $deleteWhenEntryIsDeleted = true;
 
@@ -266,7 +266,7 @@ abstract class Uploader implements UploaderInterface
         return $entry;
     }
 
-    private function deleteFiles(Model $entry)
+    protected function deleteFiles(Model $entry)
     {
         if (! $this->shouldDeleteFiles()) {
             return;

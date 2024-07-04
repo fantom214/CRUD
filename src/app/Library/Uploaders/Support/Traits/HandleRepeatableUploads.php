@@ -375,15 +375,17 @@ trait HandleRepeatableUploads
         if (get_class($entry) === get_class(app('crud')->model)) {
             $relatedEntries = $entry->{$this->getRepeatableContainerName()} ?? [];
         }
-
-        $relatedEntries ??= [$entry];
+        
+        if(! is_a($relatedEntries ?? '', Collection::class, true)) {
+            $relatedEntries = ! empty($relatedEntries) ? [$relatedEntries] : [$entry]; 
+        }
 
         foreach ($relatedEntries as $relatedEntry) {
             $this->deleteFiles($relatedEntry);
         }
     }
 
-    private function deletePivotFiles(Pivot|Model $entry)
+    protected function deletePivotFiles(Pivot|Model $entry)
     {
         if (! is_a($entry, Pivot::class, true)) {
             $pivots = $entry->{$this->getRepeatableContainerName()};
