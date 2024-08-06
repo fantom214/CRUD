@@ -3,6 +3,7 @@
 namespace Backpack\CRUD\Tests\Unit\CrudPanel;
 
 use Illuminate\Support\Arr;
+use Backpack\CRUD\Tests\config\Models\Article;
 
 /**
  * @covers Backpack\CRUD\app\Library\CrudPanel\Traits\Tabs
